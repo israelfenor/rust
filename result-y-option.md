@@ -6,6 +6,8 @@ description: O cómo devolver datos de una función en Rust
 
 ### Referencias
 
+Un listado de todo aquello de lo que me he servido para aprender y poder escribir este documento. Sincero agradecimiento a cada uno de sus autores.
+
 * [https://blog.adrianistan.eu/2017/07/03/gestion-errores-rust-option-result/](https://blog.adrianistan.eu/2017/07/03/gestion-errores-rust-option-result/)
 * [https://tourofrust.com/chapter\_4\_es.html](https://tourofrust.com/chapter_4_es.html)
 * [https://github.com/Dhghomon/easy\_rust/blob/master/README.md](https://github.com/Dhghomon/easy_rust/blob/master/README.md)

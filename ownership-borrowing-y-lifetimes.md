@@ -6,6 +6,8 @@ description: O cómo se gestiona la memoria en Rust
 
 ### Referencias
 
+Un listado de todo aquello de lo que me he servido para aprender y poder escribir este documento. Sincero agradecimiento a cada uno de sus autores.
+
 * [https://blog.adrianistan.eu/2017/07/03/referencias-prestamos-en-rust/](https://blog.adrianistan.eu/2017/07/03/referencias-prestamos-en-rust/)
 * [https://tourofrust.com/chapter\_5\_es.html](https://tourofrust.com/chapter_5_es.html)
 * [https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/](https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/)
