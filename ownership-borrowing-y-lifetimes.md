@@ -2,9 +2,88 @@
 description: O cómo se gestiona la memoria en Rust
 ---
 
-# Ownership, borrowing y lifetimes
+Antes de empezar voy a listar una serie de palabras inglesas muy utilizadas en el ámbito de la gestión de la memoría en Rust con la traducción que he utilizado para este artículo.
 
-### Referencias
+* ___Ownership___: __Propiedad__.
+* ___Owner___: __Propietario__.
+* ___Borrowing___: __Préstamo__.
+* ___Borrows___: __Pedir prestado__.
+* ___Lifetime___: __Tiempo de vida__.
+* ___Stack___: __Pila__.
+* ___Heap___: __Montón__.
+* ___Scope___: __Ámbito__.
+* ___Reference___: __Referencia__.
+* ___Dereference___: __Desreferencia__.
+* ___Drop___: __Soltar__. Pero en este artículo usaré la palabra __liberar__ creo que se entiende mejor.
+* ___Dropped___: __Caído__. Pero en este artículo usaré la palabra __liberado__ creo que se entiende mejor.
+* ___Size___: __Tamaño__.
+* ___Pointer___: __Puntero__.
+* ___Garbage collection___: __Recolección de basura__.
+* ___Manual memory allocation___: __Asignación manual de memoria__.
+
+# _Ownership_, _Borrowing_ & _Lifetime_: Propiedad, préstamo y tiempo de vida
+
+## Gestión de la memoria
+
+Todos los lenguajes de programación transfieren al programador, en mayor o menor medida, la responsabilidad de guardar y borrar datos de la memoría (gestionar la memoria). Esa gestión puede ser de dos maneras:
+
+* mediante un __recolector de basura__ (_garbage collector_), dónde el programador no tiene que pensar ni preocuparse dónde ni cómo los datos son almacenados ni de borrar esos datos. De eso se encarga el propio entorno de ejecución (_runtime_) del lenguaje. Y es una comodidad para el programador. Lenguajes como PHP, Python, Ruby, Javascript, Go o Java entre muchos funcionan de esta manera.
+* mediante la __asignación manual de memoria__ (_Manual memory allocation_), en la que la gestión completa de la memoría recae sobre el programador y por tanto requiere un mayor esfuerzo. Lenguajes como C y C++ funcionan de esta manera.
+
+Y luego está cómo se gestiona la memoria en Rust, que ni usa un recolector de basura ni una asignación manual.
+
+### _Stack_ y _Heap_: Pila y montón
+La pila y el montón son partes de la memoría donde se pueden almacenar datos.
+
+En la pila se guardan los datos "uno encima del otro" y se quitan de uno en uno empezando por el último que se puso.
+A esto se le llama LIFO, _Last In, First Out_ lo que viene a decir que el último en entrar es el primero en salir. Su nombre ya nos dice mucho, es una pila. Pensemos en una pila de libros, complicado quitar el libro que hay más abajo sin quitar los que hay encima.
+
+El montón no tiene una estructura fija tan "estricta" como la pila, es más un espacio, pero podríamos decir que es algo parecido a una lista. Siguiendo con la analogía anterior, podríamos decir que es una estantería dónde vamos poniendo los libros.
+
+Qué va en la pila y qué va en el montón depende del tipo del dato que queremos almacenar. Generalizando diremos que todo dato que tenga un tamaño (_size_) fijo o su tamaño sea conocido en tiempo de compilación se almacena en la pila, y los datos que no tengan un tamaño fijo o éste sea desconocido, se almacenan en el montón.
+
+Cuando hablamos de tamaño nos referimos a la cantidad de bytes necesarios para almacenar el dato.
+
+* Se guardan en la pila, por ejemplo: enteros, flotantes, boleanos, caracteres, punteros...
+* Se guardan en el montón, por ejempo: cadenas de texto, listas, vectores...
+
+Por detalles técnicos que quedan fuera del ámbito de este artículo, almacenar datos en el montón requiere más tiempo que en la pila, ya que el sistema debe encontrar un espacio de memoría libre suficientemente grande para almacenar esos datos.
+
+El programa no puede tener un acceso directo a los datos almacenados en el montón, como sí lo tiene a los de la pila. Cada vez que se almacena un dato en el montón, el programa se guarda un puntero (_pointer_) a ese espacio. Ese puntero, se guarda en la pila.
+
+```rust
+let i: i32 = 10; // Este dato (10) es almacenado en la pila
+```
+```
+      +----+
+Pila  | 10 |
+      +----+
+```
+
+```rust
+let cadena: String = String::from("Hola, mundo"); // Este dato (Hola, mundo) es almacenado en el montón
+```
+```
+            puntero
+           /    capacidad
+          /    /     tamaño
+         /    /     /
+       +---+----+----+
+Pila   | * | 13 | 12 | cadena
+       +-|-+----+----+
+         |
+      [--|------------capacidad------------------------]
+         |
+       +-v-+---+---+---+---+---+---+---+---+---+---+---+
+Montón | H | o | l | a |   | , | m | u | n | d | o |   |
+       +---+---+---+---+---+---+---+---+---+---+---+---+
+
+       [---------------tamaño----------------------]
+```
+La variable `cadena` se guarda en memoria de la siguiente manera: en el montón se guarda el contenido de la variable y en la pila se almacena un puntero al espacio reservado en el montón para guardar el contenido de la variable, junto con la capacidad de ese espacio y el tamaño del contenido.
+
+
+### Bibliografía
 
 Un listado de todo aquello de lo que me he servido para aprender y poder escribir este documento. Sincero agradecimiento a cada uno de sus autores.
 
