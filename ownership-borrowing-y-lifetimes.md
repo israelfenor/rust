@@ -4,7 +4,7 @@ description: O cómo se gestiona la memoria en Rust
 
 # Ownership, borrowing y lifetimes
 
-Este es una lista de palabras inglesas muy utilizadas en el ámbito de la gestión de la memoria en Rust con la traducción que he utilizado para este artículo.
+Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gestión de la memoria en Rust con la traducción que he utilizado para este artículo.
 
 * _**Borrowing**_: Préstamo.
 * _**Borrows**_: Pedir prestado.
@@ -19,14 +19,14 @@ Este es una lista de palabras inglesas muy utilizadas en el ámbito de la gesti�
 * _**Ownership**_: Propiedad.
 * _**Pointer**_: Puntero.
 * _**Reference**_: Referencia.
-* _**Runtime**_: Entorno de ejecución
+* _**Runtime**_: Entorno de ejecución.
 * _**Scope**_: Ámbito.
 * _**Size**_: Tamaño.
 * _**Stack**_: Pila.
 
 ## _Ownership_, _Borrowing_ & _Lifetime_: Propiedad, préstamo y tiempo de vida
 
-Para poder entender cómo se gestiona la memoria en Rust primero es necesario conocer qué son la pila \(_stack_\) y el montón \(_heap_\).
+Para poder entender cómo se gestiona la memoria en Rust antes es necesario conocer, de una manera muy superficial, cómo funciona la memoría de un ordenador.
 
 ### Pila y montón
 
@@ -36,9 +36,9 @@ La pila tiene una estructura, justamente como su nombre indica, de pila. En la p
 
 El montón no tiene una estructura fija tan "estricta" como la pila, es más un espacio. En la que los datos se van guardando allí donde hay espacio libre. Siguiendo con la analogía anterior, podríamos decir que es una estantería donde podemos poner algunos libros continuos y otros no. Unos en un estante y otros en otro.
 
-Qué va en la pila y qué va en el montón depende del tipo del dato que queremos almacenar. Generalizando diremos que todo dato que tenga un tamaño \(_size_\) fijo o su tamaño sea conocido en tiempo de compilación se almacena en la pila, y los datos que no tengan un tamaño fijo o éste sea desconocido en tiempo de compilación, se almacenan en el montón.
+Qué va en la pila y qué va en el montón depende, generalizando, del tipo del dato que queremos almacenar. Más precisamente del tamaño \(_size_\) de la memoria necesario para almacenar ese dato.
 
-Cuando hablamos de tamaño nos referimos a la cantidad de bytes necesarios para almacenar el dato.
+Todo dato que requiera de una cantidad de memoria conocida en tiempo de compilación se almacena en la pila, y cuando esa cantidad sea desconocida en tiempo de compilación, se almacena en el montón.
 
 * Se guardan en la pila, por ejemplo: enteros, flotantes, booleanos, caracteres, punteros...
 * Se guardan en el montón, por ejemplo: cadenas de texto, listas, vectores...
@@ -86,6 +86,8 @@ Montón | H | o | l | a | , |   | m | u | n | d | o |   |
 
        [---------------tamaño----------------------]
 ```
+
+TO DO: Aquí falta hablar de cómo se borran los datos de la pila y el montón
 
 Y es según la manera en cómo se almacena y se borran datos en el montón la que determina, principalmente, cómo se gestiona la memoria en un lenguaje de programación.
 
