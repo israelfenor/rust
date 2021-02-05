@@ -6,11 +6,12 @@ description: O cómo se gestiona la memoria en Rust
 
 Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gestión de la memoria en Rust con la traducción que he utilizado para este artículo.
 
+* _**Bind:**_ Enlazar.
 * _**Borrowing**_: Préstamo.
 * _**Borrows**_: Pedir prestado.
 * _**Dereference**_: "Desreferencia". No he encontrado una palabra mejor en español y me he inventado ésta.
-* _**Drop**_: Soltar. Pero en este artículo usaré la palabra **liberar** creo que se entiende mejor.
-* _**Dropped**_: Caído. Pero en este artículo usaré la palabra **liberado** creo que se entiende mejor.
+* _**Drop**_: Soltar.
+* _**Dropped**_: Soltado.
 * _**Garbage collection**_: Recolección de basura.
 * _**Heap**_: Montón.
 * _**Lifetime**_: Tiempo de vida.
@@ -26,7 +27,21 @@ Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gesti�
 
 ## _Ownership_, _Borrowing_ & _Lifetime_: Propiedad, préstamo y tiempo de vida
 
-Para poder entender cómo se gestiona la memoria en Rust antes es necesario conocer, de una manera muy superficial, cómo funciona la memoría de un ordenador.
+Para poder entender cómo se gestiona la memoria en Rust antes es necesario conocer, de una manera muy superficial, cómo se usa la memoria de un ordenador.
+
+### Variables y datos
+
+Siempre pensé en una variable como en una caja donde se guarda un dato, y esa caja era un trocito de memoria.
+
+En mi mente la frase "a la variable num se le asigna el valor 1" o mejor aún "num vale 1", sumado a como en muchos lenguajes de programación se declaran variables y se les dan un valor, asentaron más la idea de que primero estaba la variable y luego el dato que se guardaba en ella.
+
+A la variable se le podían ir poniendo datos, unos reemplazando a los otros \("ahora num vale 5"\) y cuando no necesitaba más esa variable, esa caja, la destruía y listos.
+
+Pero la realidad es diferente, primero está el dato y luego está la variable. Primero el dato se guarda en la memoria y luego se crea una variable que se enlaza \(_bind_\) con ese dato. 
+
+Cuando pasamos una variable como parámetro a una función no pasamos el dato de una caja a otra, sino que enlazamos otra variable a ese dato. Las funciones no retornan variables, retornan los datos esperando ser enlazados a otra variable. Y cuando no necesitamos más un dato, desenlazamos \(_unbind_\) la variable enlazada.
+
+El cambio es sutil, pero el concepto de enlace es muy útil para entender ciertos aspectos de la gestión de la memoria.
 
 ### Pila y montón
 
@@ -49,7 +64,7 @@ Veamos un ejemplo de dato almacenado en la pila:
 let i: i32 = 10;
 // El dato 10 es almacenado en la pila ya que conocemos la cantidad de bytes
 // necesarios para almacenar ese dato (el mismo que para almacenar cualquier
-// dato soportado por el tipo i32)
+// dato soportado por el tipo i32, ya sea un 200 o un 1239)
 ```
 
 ```text
@@ -67,7 +82,7 @@ let mut cadena: &str = "Hola, mundo";
 // tamaño necesario para almacenar "Hola, mundo" que para almacenar "Hasta luego"
 ```
 
-La variable `cadena` se guarda en memoria de la siguiente manera: en el montón se guarda el contenido de la variable y en la pila se almacena un puntero \(_pointer_\) a ese espacio en el montón junto con la capacidad de ese espacio y el tamaño del contenido.
+La variable `cadena` se guarda en memoria de la siguiente manera: en el montón se guarda el dato \(en este caso la cadena de texto\) y en la pila se almacena un puntero \(_pointer_\) a ese espacio en el montón junto con la capacidad de ese espacio y el tamaño del contenido.
 
 ```text
             puntero
@@ -87,9 +102,7 @@ Montón | H | o | l | a | , |   | m | u | n | d | o |   |
        [---------------tamaño----------------------]
 ```
 
-TO DO: Aquí falta hablar de cómo se borran los datos de la pila y el montón
-
-Y es según la manera en cómo se almacena y se borran datos en el montón la que determina, principalmente, cómo se gestiona la memoria en un lenguaje de programación.
+Dependiendo de la manera en cómo se almacena y se borran datos en el montón  determina, principalmente, cómo se gestiona la memoria en un lenguaje de programación.
 
 ### Gestión de la memoria
 
@@ -100,11 +113,15 @@ Esa gestión puede ser de dos maneras:
 * mediante un **recolector de basura** \(_garbage collector_\), donde el programador no tiene que pensar ni preocuparse dónde ni cómo los datos son almacenados ni de liberar la memoria. De eso se encarga el propio entorno de ejecución \(_runtime_\) del lenguaje. Lenguajes como PHP, Python, Javascript o Java entre muchos funcionan de esta manera.
 * mediante la **asignación manual de memoria** \(_Manual memory allocation_\), en la que la gestión completa de la memoria recae sobre el programador. Lenguajes como C y C++ funcionan de esta manera.
 
-El recolector de basura facilita la vida al desarrollador, a costa de una pérdida de rendimiento y control. Mediante la asignacion manual de memoria tienes rendimiento y control, pero a cambio tienes una mayor complejidad.
+El recolector de basura facilita la vida al desarrollador a costa de una pérdida de rendimiento y de control. Mediante la asignacion manual de memoria tienes el rendimiento y control, a cambio de una mayor complejidad de código.
 
-Pero hay una tercera manera, que es como lo hace Rust, que ni usa un recolector de basura ni una asignación manual.
+Pero existe una tercera manera de gestionar la memoria, la forma en que lo hace Rust, mediante la propiedad \(_ownership_\) y los préstamos \(_borrowing_\).
 
-#### Bibliografía
+### Propiedad
+
+
+
+### Enlaces de referencia
 
 Un listado de todo aquello de lo que me he servido para aprender y poder escribir este documento. Sincero agradecimiento a cada uno de sus autores.
 
