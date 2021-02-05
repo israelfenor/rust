@@ -24,6 +24,7 @@ Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gesti�
 * _**Scope**_: Ámbito.
 * _**Size**_: Tamaño.
 * _**Stack**_: Pila.
+* _**Unbind:**_ Desligar.
 
 ## _Ownership_, _Borrowing_ & _Lifetime_: Propiedad, préstamo y tiempo de vida
 
@@ -39,7 +40,7 @@ A la variable se le podían ir poniendo datos, unos reemplazando a los otros \("
 
 Pero la realidad es diferente, primero está el dato y luego está la variable. Primero el dato se guarda en la memoria y luego se crea una variable que se enlaza \(_bind_\) con ese dato. 
 
-Cuando pasamos una variable como parámetro a una función no pasamos el dato de una caja a otra, sino que enlazamos otra variable a ese dato. Las funciones no retornan variables, retornan los datos esperando ser enlazados a otra variable. Y cuando no necesitamos más un dato, desenlazamos \(_unbind_\) la variable enlazada.
+Cuando pasamos una variable como parámetro a una función no pasamos el dato de una caja a otra, sino que enlazamos otra variable a ese dato. Las funciones no retornan variables, retornan los datos esperando ser enlazados a otra variable. Y cuando no necesitamos más un dato, desligamos \(_unbind_\) la variable enlazada.
 
 El cambio es sutil, pero el concepto de enlace es muy útil para entender ciertos aspectos de la gestión de la memoria.
 
@@ -113,7 +114,7 @@ Esa gestión puede ser de dos maneras:
 * mediante un **recolector de basura** \(_garbage collector_\), donde el programador no tiene que pensar ni preocuparse dónde ni cómo los datos son almacenados ni de liberar la memoria. De eso se encarga el propio entorno de ejecución \(_runtime_\) del lenguaje. Lenguajes como PHP, Python, Javascript o Java entre muchos funcionan de esta manera.
 * mediante la **asignación manual de memoria** \(_Manual memory allocation_\), en la que la gestión completa de la memoria recae sobre el programador. Lenguajes como C y C++ funcionan de esta manera.
 
-El recolector de basura facilita la vida al desarrollador a costa de una pérdida de rendimiento y de control. Mediante la asignacion manual de memoria tienes el rendimiento y control, a cambio de una mayor complejidad de código.
+El recolector de basura facilita la vida al desarrollador a costa de una pérdida de rendimiento y de control. Mediante la asignación manual de memoria tienes el rendimiento y control, a cambio de una mayor complejidad de código.
 
 Pero existe una tercera manera de gestionar la memoria, la forma en que lo hace Rust, mediante la propiedad \(_ownership_\) y los préstamos \(_borrowing_\).
 
