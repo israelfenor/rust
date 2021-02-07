@@ -30,19 +30,19 @@ Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gesti�
 
 Para poder entender cómo se gestiona la memoria en Rust antes es necesario conocer, de una manera muy superficial, cómo se usa la memoria de un ordenador.
 
-### Variables y datos
+### Variables y valores
 
-Siempre pensé en una variable como en una caja donde se guarda un dato, y esa caja era un trocito de memoria.
+Siempre pensé en una variable como en una caja donde se guarda un valor, y esa caja era un trocito de memoria.
 
-En mi mente la frase "a la variable num se le asigna el valor 1" o mejor aún "num vale 1", sumado a como en muchos lenguajes de programación se declaran variables y se les dan un valor, asentaron más la idea de que primero estaba la variable y luego el dato que se guardaba en ella.
+Frases que están en mi cabeza como "a la variable num se le asigna el valor 1" o "num vale 1", sumado a la sintaxis que utilizan muchos lenguajes de programación para declarar variables y darles un valor, me hacían pensar que primero estaba la variable y luego el valor que se guardaba en ella.
 
-A la variable se le podían ir poniendo datos, unos reemplazando a los otros \("ahora num vale 5"\) y cuando no necesitaba más esa variable, esa caja, la destruía y listos.
+A la variable se le podían ir asignando valores , unos reemplazando a los otros \("ahora num vale 5"\) y cuando no necesitaba más esa variable, esa caja, la destruía y listos.
 
-Pero la realidad es diferente, primero está el dato y luego está la variable. Primero el dato se guarda en la memoria y luego se crea una variable que se enlaza \(_bind_\) con ese dato. 
+Pero lo que sucede es ligeramente diferente. Primero está el valor y luego está la variable. Primero el valor se guarda en la memoria y luego se crea una variable que se enlaza \(_bind_\) con ese valor \(realmente enlaza con la dirección de la memoria en la que guarda el valor\). 
 
-Cuando pasamos una variable como parámetro a una función no pasamos el dato de una caja a otra, sino que enlazamos otra variable a ese dato. Las funciones no retornan variables, retornan los datos esperando ser enlazados a otra variable. Y cuando no necesitamos más un dato, desligamos \(_unbind_\) la variable enlazada.
+Cuando pasamos una variable como parámetro a una función no pasamos el valor de una caja a otra, sino que enlazamos la variable que recibe el parámetro a ese valor \(de nuevo a la dirección de memoria\). Las funciones no retornan variables, retornan los valores para que estos sean enlazados a otra variable.
 
-El cambio es sutil, pero el concepto de enlace es muy útil para entender ciertos aspectos de la gestión de la memoria.
+El cambio es sutil, pero el concepto de enlace es muy útil para entender ciertos aspectos de la gestión de la memoria que veremos más adelante.
 
 ### Pila y montón
 
@@ -119,6 +119,42 @@ El recolector de basura facilita la vida al desarrollador a costa de una pérdid
 Pero existe una tercera manera de gestionar la memoria, la forma en que lo hace Rust, mediante la propiedad \(_ownership_\) y los préstamos \(_borrowing_\).
 
 ### Propiedad
+
+En Rust, todo valor tiene un único propietario que determina su tiempo de vida. Por tiempo de vida entendemos el tiempo en el que el valor estará almacenado en memoria y puede ser accedido.
+
+#### La propiedad empieza con una asignación
+
+Asignar un valor a una variable \(por tanto enlazar la variable a ese valor\) hace que esa variable sea la propietaria de ese valor.
+
+```text
+fn main () {
+    let num: i32 = 10;
+    println!("El valor de num es: {}", num);
+}
+// El valor 10 está enlazado a la variable num.
+// La variable num es la propietaria del valor 10.
+```
+
+#### La propiedad acaba con el ámbito
+
+Cuando se termina el ámbito \(_scope\)_ de una variable, el valor enlazado es borrado de la memoria. En terminología Rust se dice que el valor es soltado \(_dropped_\). Una variable no puede ser utilizada fuera de su ámbito y un valor soltado no puede ser accedido.
+
+```text
+fn main () {
+    {
+        let num: i32 = 10;
+        println!("Este es el ámbito de num y su valor es: {}", num);
+    }
+    println!("Esto es fuera del ámbtio de num y su valor es: {}", num);
+}
+// La declaración de la variable num ocurre dentro de un bloque delimitado entre {}.
+// El ámbito de la variable num es ese bloque de código.
+// Una vez se sale del ámbito, el valor enlazado con la variable num (10) es eliminado
+// de la memoria (es soltado).
+// No se puede usar la variable num fuera de su ámbito ni acceder al valor 10 más allá.
+// de ese ámbtio. La sentecia println!("Esto es fuera del ámbtio de num y su valor es: {}", num);
+// da un error de compilación.
+```
 
 
 
