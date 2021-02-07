@@ -120,7 +120,12 @@ Pero existe una tercera manera de gestionar la memoria, la forma en que lo hace 
 
 ### Propiedad
 
-En Rust, todo valor tiene un único propietario que determina su tiempo de vida. Por tiempo de vida entendemos el tiempo en el que el valor estará almacenado en memoria y puede ser accedido.
+En Rust, todo valor tiene un único propietario. Ser propietario de un valor:
+
+* implica ser el único que puede acceder al valor y
+* determina el tiempo de vida del valor
+
+Entendemos por tiempo de vida, al tiempo en el que el valor está almacenado en memoria y puede ser accedido y manipulado.
 
 #### La propiedad empieza con una asignación
 
@@ -137,7 +142,7 @@ fn main () {
 
 #### La propiedad acaba con el ámbito
 
-Cuando se termina el ámbito \(_scope\)_ de una variable, el valor enlazado es borrado de la memoria. En terminología Rust se dice que el valor es soltado \(_dropped_\). Una variable no puede ser utilizada fuera de su ámbito y un valor soltado no puede ser accedido.
+Cuando se termina el ámbito \(_scope\)_ de una variable, el valor enlazado del que es propietaria es borrado de la memoria. En terminología Rust se dice que el valor es soltado \(_dropped_\). Una variable no puede ser utilizada fuera de su ámbito y un valor soltado no puede ser accedido.
 
 ```text
 fn main () {
@@ -156,7 +161,7 @@ fn main () {
 // da un error de compilación.
 ```
 
-
+El tiempo de vida del valor acaba cuando la variable termina su ámbito.
 
 ### Enlaces de referencia
 
