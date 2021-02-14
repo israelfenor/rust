@@ -4,14 +4,16 @@ description: O cómo se gestiona la memoria en Rust
 
 # Ownership, borrowing y lifetimes
 
-Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gestión de la memoria en Rust con la traducción que he utilizado para este artículo.
+Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gestión de la memoria en Rust con la traducción que he utilizado para este documento.
 
+* _**Allocation:**_ Asignar.
 * _**Bind:**_ Enlazar.
 * _**Borrowing**_: Préstamo.
 * _**Borrows**_: Pedir prestado.
 * _**Dereference**_: "Desreferencia". No he encontrado una palabra mejor en español y me he inventado ésta.
 * _**Drop**_: Soltar.
 * _**Dropped**_: Soltado.
+* _**Free**_: Liberar.
 * _**Garbage collection**_: Recolección de basura.
 * _**Heap**_: Montón.
 * _**Lifetime**_: Tiempo de vida.
@@ -34,13 +36,13 @@ Para poder entender cómo se gestiona la memoria en Rust antes es necesario cono
 
 Siempre pensé en una variable como en una caja donde se guarda un valor, y esa caja era un trocito de memoria.
 
-Frases que están en mi cabeza como "a la variable num se le asigna el valor 1" o "num vale 1", sumado a la sintaxis que utilizan muchos lenguajes de programación para declarar variables y darles un valor, me hacían pensar que primero estaba la variable y luego el valor que se guardaba en ella.
+A la variable se le podían ir asignando valores, unos reemplazando a los otros y cuando no necesitaba más esa variable, esa caja, la destruía y listos.
 
-A la variable se le podían ir asignando valores , unos reemplazando a los otros \("ahora num vale 5"\) y cuando no necesitaba más esa variable, esa caja, la destruía y listos.
+Frases que están en mi cabeza como "a la variable num se le asigna el valor 1" o "num vale 1", sumado a la sintaxis que utilizan muchos lenguajes de programación para declarar variables y darles un valor, me hacían pensar que primero estaba la variable y luego el valor que se guardaba en ella.
 
 Pero lo que sucede es ligeramente diferente. Primero está el valor y luego está la variable. Primero el valor se guarda en la memoria y luego se crea una variable que se enlaza \(_bind_\) con ese valor \(realmente enlaza con la dirección de la memoria en la que guarda el valor\). 
 
-Cuando pasamos una variable como parámetro a una función no pasamos el valor de una caja a otra, sino que enlazamos la variable que recibe el parámetro a ese valor \(de nuevo a la dirección de memoria\). Las funciones no retornan variables, retornan los valores para que estos sean enlazados a otra variable.
+Cuando pasamos una variable como parámetro a una función no pasamos el valor de una caja a otra, sino que enlazamos la variable que recibe el parámetro a ese valor. Las funciones no retornan variables, retornan los valores para que estos sean enlazados a la variable que recibe el resultado de la función.
 
 El cambio es sutil, pero el concepto de enlace es muy útil para entender ciertos aspectos de la gestión de la memoria que veremos más adelante.
 
@@ -69,30 +71,32 @@ let i: i32 = 10;
 ```
 
 ```text
-      +----+
-Pila  | 10 |
-      +----+
+      +----+---+
+Pila  | 10 | i |
+      +----+---+
 ```
 
 Ahora veamos un ejemplo de datos almacenado en el montón:
 
 ```rust
-let mut cadena: &str = "Hola, mundo";
+let texto: String = String::from("Hola, mundo");
 // El dato "Hola, mundo" es almacenado en el montón ya que la variable cadena al
-// ser de tipo &str cambiará su tamaño si se cambia su contenido. Es diferente el
-// tamaño necesario para almacenar "Hola, mundo" que para almacenar "Hasta luego"
+// ser de tipo String cambiará su tamaño si se cambia su contenido.
+// Es diferente el tamaño necesario para almacenar "Hola, mundo" que
+// para almacenar "Hasta luego"
 ```
 
-La variable `cadena` se guarda en memoria de la siguiente manera: en el montón se guarda el dato \(en este caso la cadena de texto\) y en la pila se almacena un puntero \(_pointer_\) a ese espacio en el montón junto con la capacidad de ese espacio y el tamaño del contenido.
+La variable `texto` se guarda en memoria de la siguiente manera: en el montón se guarda el dato \(en este caso la cadena de texto\) y en la pila se almacena un puntero \(_pointer_\) a ese espacio en el montón junto con la capacidad de ese espacio y el tamaño del contenido.
 
 ```text
-            puntero
-           /    capacidad
-          /    /     tamaño
-         /    /     /
-       +---+----+----+
-Pila   | * | 13 | 12 | cadena
-       +-|-+----+----+
+              puntero
+            /    capacidad
+           /    /     tamaño
+          /    /     /   variable
+         /    /     /   /
+       +---+----+----+-------+
+Pila   | * | 13 | 12 | texto |
+       +-|-+----+----+-------+
          |
       [--|------------capacidad------------------------]
          |
@@ -107,31 +111,26 @@ Dependiendo de la manera en cómo se almacena y se borran datos en el montón  d
 
 ### Gestión de la memoria
 
-Todos los lenguajes de programación transfieren al programador, en mayor o menor medida, la responsabilidad de gestionar la memoria. Con esto me refiero principalmente a almacenar datos \(ocupando memoria libre\) y liberar la memoria ocupada cuando los datos que almacena ya no son necesarios.
+Todos los lenguajes de programación transfieren al programador, en mayor o menor medida, la responsabilidad de gestionar la memoria. Principalmente almacenar datos ocupando memoria libre \(_allocation\)_ y borrar esos datos cuando ya nos son necesarios, liberando la memoria ocupada \(_free_\).
 
 Esa gestión puede ser de dos maneras:
 
-* mediante un **recolector de basura** \(_garbage collector_\), donde el programador no tiene que pensar ni preocuparse dónde ni cómo los datos son almacenados ni de liberar la memoria. De eso se encarga el propio entorno de ejecución \(_runtime_\) del lenguaje. Lenguajes como PHP, Python, Javascript o Java entre muchos funcionan de esta manera.
-* mediante la **asignación manual de memoria** \(_Manual memory allocation_\), en la que la gestión completa de la memoria recae sobre el programador. Lenguajes como C y C++ funcionan de esta manera.
+* mediante un **recolector de basura** \(_garbage collector_\), donde el programador no tiene que pensar ni preocuparse dónde ni cómo los datos son almacenados ni borrados. De eso se encarga el propio entorno de ejecución \(_runtime_\) del lenguaje. Lenguajes como PHP, Python, Javascript o Java entre muchos funcionan de esta manera.
+* mediante la **asignación manual de memoria** \(_Manual memory allocation_\), en la que la gestión completa de la memoria recae sobre el programador. Lenguajes como C y C++ funcionan de esta manera. Es el programador quien tiene que especificar cómo y dónde almacenar los datos y cuando borrarlos.
 
 El recolector de basura facilita la vida al desarrollador a costa de una pérdida de rendimiento y de control. Mediante la asignación manual de memoria tienes el rendimiento y control, a cambio de una mayor complejidad de código.
 
-Pero existe una tercera manera de gestionar la memoria, la forma en que lo hace Rust, mediante la propiedad \(_ownership_\) y los préstamos \(_borrowing_\).
+Pero existe una tercera manera de gestionar la memoria. La forma en que lo hace Rust, mediante la propiedad \(_ownership_\) y los préstamos \(_borrowing_\).
 
 ### Propiedad
 
-En Rust, todo valor tiene un único propietario. Ser propietario de un valor:
-
-* implica ser el único que puede acceder al valor y
-* determina el tiempo de vida del valor
-
-Entendemos por tiempo de vida, al tiempo en el que el valor está almacenado en memoria y puede ser accedido y manipulado.
+En Rust, todo valor tiene un único propietario \(_owner_\). Ser propietario de un valor implica ser el único que puede acceder al valor y determina el tiempo \(_lifetime_\) en el que el valor permanece en la memoria y puede ser accedido y manipulado.
 
 #### La propiedad empieza con una asignación
 
 Asignar un valor a una variable \(por tanto enlazar la variable a ese valor\) hace que esa variable sea la propietaria de ese valor.
 
-```text
+```rust
 fn main () {
     let num: i32 = 10;
     println!("El valor de num es: {}", num);
@@ -142,26 +141,121 @@ fn main () {
 
 #### La propiedad acaba con el ámbito
 
-Cuando se termina el ámbito \(_scope\)_ de una variable, el valor enlazado del que es propietaria es borrado de la memoria. En terminología Rust se dice que el valor es soltado \(_dropped_\). Una variable no puede ser utilizada fuera de su ámbito y un valor soltado no puede ser accedido.
+Cuando termina el ámbito \(_scope\)_ de una variable, se rompe el enlace \(_unbind_\) entre la variable y el valor del que es propietaria y comporta el borrado del valor de la memoria \(también se dice que se libera la memoria\). En Rust se dice que el valor es soltado \(_dropped_\).
 
-```text
+```rust
 fn main () {
     {
         let num: i32 = 10;
         println!("Este es el ámbito de num y su valor es: {}", num);
     }
-    println!("Esto es fuera del ámbtio de num y su valor es: {}", num);
+    println!("Esto está fuera del ámbito de num y su valor es: {}", num);
 }
 // La declaración de la variable num ocurre dentro de un bloque delimitado entre {}.
 // El ámbito de la variable num es ese bloque de código.
-// Una vez se sale del ámbito, el valor enlazado con la variable num (10) es eliminado
-// de la memoria (es soltado).
-// No se puede usar la variable num fuera de su ámbito ni acceder al valor 10 más allá.
-// de ese ámbtio. La sentecia println!("Esto es fuera del ámbtio de num y su valor es: {}", num);
+
+// Una vez se sale del ámbito, el valor enlazado con la variable num (10) es 
+// borrado de la memoria (es soltado).
+
+// No se puede usar la variable num fuera de su ámbito ni acceder al valor 10 más
+// allá de ese ámbito. La sentecia: 
+// println!("Esto está fuera del ámbito de num y su valor es: {}", num); 
 // da un error de compilación.
 ```
 
-El tiempo de vida del valor acaba cuando la variable termina su ámbito.
+#### La propiedad cambia con la reasignación
+
+Asignar una variable a otra transfiere la propiedad del valor de una a la otra.
+
+```rust
+fn main () {
+    let hola: String = String::from("Hola, mundo");
+    let saludo = hola;
+
+    println!("El valor de saludo es: {}", saludo);
+}
+// El resultado de compilar y ejecutar este código es:
+// "El valor de saludo es: Hola, mundo"
+```
+
+La propiedad del dato \(Hola, mundo\) ha pasado de la variable `hola` a la variable `saludo`.
+
+La variable `hola` ya no puede acceder al dato y es `saludo` la que sí que puede acceder, ya que ahora es su propietaria. Esto podemos verlo en el siguiente código:
+
+```rust
+fn main () {
+    let hola: String = String::from("Hola, mundo");
+    let saludo = hola;
+
+    println!("El valor de hola es: {} y el valor de saludo es: {}", hola, saludo);
+}
+```
+
+Si compilamos el código anterior obtenemos lo siguiente:
+
+```rust
+  |
+2 |     let hola: String = String::from("Hola, mundo");
+  |         ---- move occurs because `hola` has type `String`, which does not implement the `Copy` trait
+3 |     let saludo = hola;
+  |                  ---- value moved here
+4 | 
+5 |     println!("El valor de hola es: {} y el valor de saludo es: {}", hola, saludo);
+  |                                                                     ^^^^ value borrowed here after move
+
+```
+
+Del mensaje del compilador por ahora obviemos _occurs because \`hola\` has type \`String\`,_ _which does not implement the \`Copy\` trait_ y quedémonos con:
+
+```rust
+let hola: String = String::from("Hola, mundo");
+    ---- move
+let saludo = hola;
+             ---- value moved here
+println!("El valor de hola es: {} y el valor de saludo es: {}", hola, saludo);
+                                                                ^^^^
+```
+
+El compilador nos está diciendo dónde \(líneas 2 y 4\) la propiedad del dato se ha movido de la variable `hola` a la variable `saludo`y dónde \(línea 5\) se ha intentado usar la variable `hola` \(que ya no puede acceder al dato\).
+
+Esta reasignación y por tanto el cambio de propietario también sucede cuando pasamos una variable como parámetro de una función.
+
+```rust
+fn main () {
+    let hola: String = String::from("Hola, mundo");
+    
+    saludo(hola);
+    
+    println!("El valor de hola es: {}", hola);
+}
+
+fn saludo (texto: String) {
+    println!("{}", texto);
+}
+```
+
+Compilar el código anterior nos muestra el siguiente mensaje \(sigamos obviando algunos detalles\):
+
+```rust
+2 |     let hola: String = String::from("Hola, mundo");
+  |         ---- move
+3 |     
+4 |     saludo(hola);
+  |            ---- value moved here
+5 |     
+6 |     println!("El valor de hola es: {}", hola);
+  |                                         ^^^^
+```
+
+Por último, esta reasignación también ocurre cuando se retorna un valor de una función, pero en este caso puesto que al retornar un valor, el ámbito de la función se acaba y no podemos usar la variable que tiene la propiedad inicial, no nos encontraremos con estos errores.
+
+{% hint style="info" %}
+* Cada valor tiene una variable enlazada que llamamos propietario
+* Solo puede haber un único propietario de un valor al mismo tiempo
+* Cuando se acaba el ámbito del propietario el valor es soltado
+{% endhint %}
+
+
 
 ### Enlaces de referencia
 
@@ -185,4 +279,6 @@ Un listado de todo aquello de lo que me he servido para aprender y poder escribi
 * [https://willcrichton.net/notes/rust-memory-safety/](https://willcrichton.net/notes/rust-memory-safety/)
 * [https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html](https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html)
 * [https://blog.skylight.io/rust-means-never-having-to-close-a-socket/](https://blog.skylight.io/rust-means-never-having-to-close-a-socket/)
+* [https://medium.com/@thomascountz/ownership-in-rust-part-1-112036b1126b](https://medium.com/@thomascountz/ownership-in-rust-part-1-112036b1126b)
+* [https://medium.com/@thomascountz/ownership-in-rust-part-2-c3e1da89956e](https://medium.com/@thomascountz/ownership-in-rust-part-2-c3e1da89956e)
 
