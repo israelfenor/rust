@@ -1,4 +1,4 @@
-baseURL = "http://example.org/"
+baseURL = "https://apuntesderust.netlify.app/"
 title = "Apuntes de Rust"
 languageCode = "es-es"
 theme = "hyde"
