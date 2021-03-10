@@ -1,10 +1,11 @@
 +++
-title = "Ownership, borrowing: o cómo se gestiona la memoria en Rust"
-description = ""
+title = "Ownership y borrowing: o cómo se gestiona la memoria en Rust"
+summary = "Este apunte surge de mi necesidad de querer entender bien las bases de cómo Rust gestiona la memoria antes de avanzar en el aprendizaje de este lenguaje. Siento que si esta parte no la comprendo lo acabaré pagando."
 slug = "ownership-borrowing-gestion-de-memoria-rust"
 date = "2021-03-06"
-lastmod = "2021-03-07"
 +++
+
+> Aviso: Este apunte aún está inacabado, sigo investigando y actualizándolo. Por tanto puede contener errores de todo tipo.
 
 Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gestión de la memoria en Rust con la traducción que he utilizado para este documento.
 
@@ -107,9 +108,7 @@ Montón | H | o | l | a | , |   | m | u | n | d | o |   |
        [-------------- tamaño ---------------------]
 ```
 
-{% hint style="info" %}
 La manera en cómo se almacenan y se borran los datos en el montón determina cómo gestiona la memoria un lenguaje de programación y por tanto cómo se programa en ese lenguaje.
-{% endhint %}
 
 ## Gestión de la memoria
 
@@ -246,18 +245,15 @@ Compilar el código anterior nos muestra el siguiente mensaje \(he eliminado exp
 
 Por último, este cambio de asignación también ocurre cuando se retorna un valor de una función, pero en este caso puesto que al retornar un valor, el ámbito de la función se acaba y no podemos usar la variable que tiene la propiedad inicial, no nos encontraremos con estos errores.
 
-{% hint style="info" %}
-
-* Cada dato tiene una variable enlazada que es propietaria de ese dato
-* Solo puede haber un único propietario de un dato al mismo tiempo
-* Cuando se acaba el ámbito del propietario el dato es eliminado de la memoria
-  {% endhint %}
+> * Cada dato tiene una variable enlazada que es propietaria de ese dato
+> * Solo puede haber un único propietario de un dato al mismo tiempo
+> * Cuando se acaba el ámbito del propietario el dato es eliminado de la memoria
 
 Tanto el "principio" que dice que **la propiedad empieza con una asignación**, como el que dice que **la propiedad acaba con el ámbito**, son aplicables tanto para datos que se almacenan en la pila como en el montón. Pero el "principio" **la propiedad cambia con el cambio de asignación**, funciona de diferente manera dependiendo de si los datos se almacenan en la pila o en el montón.
 
 ## Enlaces de referencia
 
-Un listado de todo aquello de lo que me he servido para aprender y poder escribir este documento. Sincero agradecimiento a cada uno de sus autores.
+Un listado de todo aquello de lo que me he servido para aprender y poder escribir estos apuntes. Sincero agradecimiento a cada uno de sus autores.
 
 * [https://tourofrust.com/chapter\_5\_es.html](https://tourofrust.com/chapter_5_es.html)
 * [https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/](https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/)
