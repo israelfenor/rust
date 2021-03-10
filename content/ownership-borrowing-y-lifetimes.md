@@ -1,8 +1,10 @@
----
-description: O cómo se gestiona la memoria en Rust
----
-
-# Ownership, borrowing y lifetimes
++++
+title = "Ownership, borrowing: o cómo se gestiona la memoria en Rust"
+description = ""
+slug = "ownership-borrowing-gestion-de-memoria-rust"
+date = "2021-03-06"
+lastmod = "2021-03-07"
++++
 
 Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gestión de la memoria en Rust con la traducción que he utilizado para este documento.
 
@@ -28,11 +30,9 @@ Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gesti�
 * _**Stack**_: Pila.
 * _**Unbind:**_ Desligar.
 
-## _Ownership_, _Borrowing_ & _Lifetime_: Propiedad, préstamo y tiempo de vida
+Para poder entender ***cómo*** se gestiona la memoria en Rust antes es necesario conocer, aunque sea de una manera superficial, cómo se usa la memoria de un ordenador.
 
-Para poder entender cómo se gestiona la memoria en Rust antes es necesario conocer, aunque sea de una manera superficial, cómo se usa la memoria de un ordenador.
-
-### Variables y valores
+## Variables y valores
 
 Siempre imaginé una variable como una caja donde se guarda un dato. Y que esa caja era una porción de memoria.
 
@@ -46,7 +46,7 @@ Cuando declaramos una variable y le damos un valor, estamos enlazando la variabl
 
 El cambio es sutil, pero el concepto de enlace es muy útil para entender ciertos aspectos de la gestión de la memoria que a continuación.
 
-### Pila y montón
+## Pila y montón
 
 La pila \(_stack_\) y el montón \(_heap_\) son dos tipos de memoria donde podemos almacenar datos.
 
@@ -111,7 +111,7 @@ Montón | H | o | l | a | , |   | m | u | n | d | o |   |
 La manera en cómo se almacenan y se borran los datos en el montón determina cómo gestiona la memoria un lenguaje de programación y por tanto cómo se programa en ese lenguaje.
 {% endhint %}
 
-### Gestión de la memoria
+## Gestión de la memoria
 
 Todos los lenguajes de programación transfieren al programador, en mayor o menor medida, la gestión de la memoria del montón, que principalmente se refiere a la responsabilidad de almacenar datos en memoria ocupando memoria libre \(_allocation\)_ y borrar esos datos cuando ya nos son necesarios, liberando la memoria ocupada \(_free_\).
 
@@ -124,11 +124,11 @@ El recolector de basura facilita la vida al desarrollador a costa de una pérdid
 
 Pero existe una tercera manera de gestionar la memoria. La forma en que lo hace Rust. Mediante la propiedad \(_ownership_\) y los préstamos \(_borrowing_\).
 
-### Propiedad
+## Propiedad
 
 En Rust, todo dato tiene un único propietario \(_owner_\). Ser propietario de un dato implica ser el único que puede acceder al dato y determina el tiempo \(_lifetime_\) en el que el dato permanece en la memoria y puede ser accedido y manipulado.
 
-#### La propiedad empieza con una asignación
+### La propiedad empieza con una asignación
 
 Asignar un dato a una variable \(por tanto enlazar la variable a ese dato\) hace que esa variable sea la propietaria de ese dato.
 
@@ -141,7 +141,7 @@ fn main () {
 // La variable num es la propietaria del dato 10.
 ```
 
-#### La propiedad acaba con el ámbito
+### La propiedad acaba con el ámbito
 
 Cuando termina el ámbito \(_scope\)_ de una variable, se rompe el enlace \(_unbind_\) entre la variable y el dato del que es propietaria y comporta el borrado automático del dato de la memoria \(y la liberación de esa porción de memoria\). En Rust se dice que el valor es soltado \(_dropped_\).
 
@@ -165,7 +165,7 @@ fn main () {
 // da un error de compilación.
 ```
 
-#### La propiedad cambia con el cambio de asignación
+### La propiedad cambia con el cambio de asignación
 
 Asignar una variable a otra transfiere la propiedad del valor de una a la otra y comporta la eliminación de la variable propietaria original.
 
@@ -196,12 +196,11 @@ fn main () {
 Si compilamos el código anterior obtenemos lo siguiente:
 
 ```rust
-
 let hola: String = String::from("Hola, mundo");
     ---- move occurs because `hola` has type `String`, which does not implement the `Copy` trait
  let saludo = hola;
               ---- value moved here
- 
+
  println!("El valor de hola es: {} y el valor de saludo es: {}", hola, saludo);
                                                                  ^^^^ value borrowed here after move
 
@@ -221,9 +220,9 @@ Este cambio de asignación y por tanto el cambio de propietario también sucede 
 ```rust
 fn main () {
     let hola: String = String::from("Hola, mundo");
-    
+
     saludo(hola);
-    
+
     println!("El valor de hola es: {}", hola);
 }
 
@@ -248,14 +247,15 @@ Compilar el código anterior nos muestra el siguiente mensaje \(he eliminado exp
 Por último, este cambio de asignación también ocurre cuando se retorna un valor de una función, pero en este caso puesto que al retornar un valor, el ámbito de la función se acaba y no podemos usar la variable que tiene la propiedad inicial, no nos encontraremos con estos errores.
 
 {% hint style="info" %}
+
 * Cada dato tiene una variable enlazada que es propietaria de ese dato
 * Solo puede haber un único propietario de un dato al mismo tiempo
 * Cuando se acaba el ámbito del propietario el dato es eliminado de la memoria
-{% endhint %}
+  {% endhint %}
 
 Tanto el "principio" que dice que **la propiedad empieza con una asignación**, como el que dice que **la propiedad acaba con el ámbito**, son aplicables tanto para datos que se almacenan en la pila como en el montón. Pero el "principio" **la propiedad cambia con el cambio de asignación**, funciona de diferente manera dependiendo de si los datos se almacenan en la pila o en el montón.
 
-### Enlaces de referencia
+## Enlaces de referencia
 
 Un listado de todo aquello de lo que me he servido para aprender y poder escribir este documento. Sincero agradecimiento a cada uno de sus autores.
 
@@ -279,4 +279,3 @@ Un listado de todo aquello de lo que me he servido para aprender y poder escribi
 * [https://blog.skylight.io/rust-means-never-having-to-close-a-socket/](https://blog.skylight.io/rust-means-never-having-to-close-a-socket/)
 * [https://medium.com/@thomascountz/ownership-in-rust-part-1-112036b1126b](https://medium.com/@thomascountz/ownership-in-rust-part-1-112036b1126b)
 * [https://medium.com/@thomascountz/ownership-in-rust-part-2-c3e1da89956e](https://medium.com/@thomascountz/ownership-in-rust-part-2-c3e1da89956e)
-

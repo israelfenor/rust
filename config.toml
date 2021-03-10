@@ -1,0 +1,7 @@
+baseURL = "http://example.org/"
+title = "Apuntes de Rust"
+languageCode = "es-es"
+theme = "hyde"
+
+[params]
+  description = "Una serie de anotaciones útiles en mi largo y tortuoso camino de aprendizaje de Rust."
