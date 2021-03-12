@@ -5,7 +5,7 @@ slug = "ownership-borrowing-gestion-de-memoria-rust"
 date = "2021-03-06"
 +++
 
-> Aviso: Este apunte aún está inacabado, sigo investigando y actualizándolo. Por tanto puede contener errores de todo tipo.
+> Aviso: Este apunte aún está inacabado, lo iré actualizando según voy investigando y aprendiendo, por tanto puede contener errores de todo tipo.
 
 Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gestión de la memoria en Rust con la traducción que he utilizado para este documento.
 
