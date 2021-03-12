@@ -12,15 +12,8 @@
       </p>
     </div>
 
-    <nav>
-      <ul class="sidebar-nav">
-        <li><a href="{{ .Site.BaseURL }}">Home</a> </li>
-        {{ range .Site.Menus.main -}}
-        <li><a href="{{.URL}}"> {{ .Name }} </a></li>
-        {{- end }}
-      </ul>
-    </nav>
-
-    <p>{{ with .Site.Params.copyright }}{{.}}{{ else }}&copy; {{ now.Format "2006"}}. All rights reserved. {{end}}</p>
+    <p class="text-small">Esta sitio web usa <a href="https://gohugo.io/">Hugo</a> con una adaptación del tema <a href="https://themes.gohugo.io/hyde/">Hyde</a> y alojado en <a href="https://netlify.com">Netlify</a>.</p>
+    <p class="text-small">El código fuente y el contenido de este sitio web está disponible en <a href="https://github.com/israelfenor/apuntes-de-rust">Github</a>. Comentarios y mejoras son bienvenidos.</p>    
+    <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Licencia de Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a>
   </div>
 </aside>

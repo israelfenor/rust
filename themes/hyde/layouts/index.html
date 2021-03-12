@@ -7,15 +7,9 @@
     </h1>
     <p class="post-date">Publicado el <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z0700" }}">{{ .Date.Format "2006-01-02"}}</time> y actualizado el <time datetime="{{ .Lastmod.Format " 2006-01-02T15:04:05Z0700" }}">{{ .Lastmod.Format "2006-01-02" }}</time></p>
     {{ .Summary }}
-    {{ if .Truncated }}
     <div class="read-more-link">
       <a href="{{ .RelPermalink }}">Seguir leyendo &#9656;</a>
     </div>
-    {{ else }}
-    <div class="read-more-link">
-      <a href="{{ .RelPermalink }}">Seguir leyendo &#9656;</a>
-    </div>
-    {{ end }}
   </article>
   {{- end }}
 </div>
