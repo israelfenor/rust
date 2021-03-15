@@ -6,17 +6,14 @@ date = "2021-03-06"
 
 +++
 
-> Aviso: Este apunte aún está inacabado, lo iré actualizando según voy investigando y aprendiendo, por tanto puede contener errores de todo tipo.
+> Puesto que no soy ningún experto en la materia aviso que este escrito puede contener errores. Como sigo estudiando y aprendiendo lo iré corrigiendo y ampliando. También aviso de que he simplificado algunas secciones para facilitar alguna explicación.
 
 Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gestión de la memoria en Rust con la traducción que he utilizado para este documento.
 
 * ***Allocation***: Asignar.
 * ***Bind***: Enlazar.
 * ***Borrowing***: Préstamo.
-* ***Borrows***: Pedir prestado.
 * ***Copy***: Copiar.
-* ***Dereference***: *Desreferencia*. No he encontrado una palabra mejor en español y me he inventado ésta.
-* ***Drop***: Soltar.
 * ***Dropped***: Soltado.
 * ***Free***: Liberar.
 * ***Garbage collection***: Recolección de basura.
@@ -26,7 +23,6 @@ Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gesti�
 * ***Owner***: Propietario.
 * ***Ownership***: Propiedad.
 * ***Pointer***: Puntero.
-* ***Reference***: Referencia.
 * ***Runtime***: Entorno de ejecución.
 * ***Scope***: Ámbito.
 * ***Size***: Tamaño.
@@ -123,7 +119,7 @@ Generalizando, esa gestión puede ser de dos maneras:
 
 El recolector de basura facilita la vida al desarrollador a costa de una pérdida de rendimiento y de control. Mediante la asignación manual de memoria tienes el rendimiento y control, a cambio de una mayor complejidad de código.
 
-Pero existe una tercera manera de gestionar la memoria. La forma en que lo hace Rust. Mediante la propiedad \(_ownership_\) y los préstamos \(_borrowing_\).
+Pero existe una tercera manera de gestionar la memoria. Mediante la propiedad \(_ownership_\), la manera en cómo lo hace Rust.
 
 ## Propiedad
 
@@ -138,7 +134,7 @@ fn main () {
     let num: i32 = 10;
     println!("El valor de num es: {}", num);
 }
-// El dato 10 está enlazado a la variable num.
+// El dato 10 está enlazado a la variable 'num'.
 // La variable num es la propietaria del dato 10.
 ```
 
@@ -154,13 +150,13 @@ fn main () {
     }
     println!("Esto está fuera del ámbito de num y su valor es: {}", num);
 }
-// La declaración de la variable num ocurre dentro de un bloque delimitado entre {}.
-// El ámbito de la variable num es ese bloque de código.
+// La declaración de la variable 'num' ocurre dentro de un bloque delimitado entre {}.
+// El ámbito de la variable 'num' es ese bloque de código.
 
-// Una vez se sale del ámbito, el dato enlazado con la variable num (un 10) es 
+// Una vez se sale del ámbito, el dato enlazado con la variable 'num' (un 10) es 
 // borrado de la memoria (es soltado).
 
-// No se puede usar la variable num fuera de su ámbito por tanto no se puede 
+// No se puede usar la variable 'num' fuera de su ámbito por tanto no se puede 
 // acceder al dato 10 más allá de ese ámbito. La sentecia: 
 // println!("Esto está fuera del ámbito de num y su valor es: {}", num); 
 // da un error de compilación.
@@ -168,7 +164,9 @@ fn main () {
 
 ### La propiedad se mueve con el cambio de asignación
 
-Asignar una variable a otra transfiere la propiedad del valor de una a la otra y comporta la eliminación de la variable propietaria original.
+Asignar una variable que está enlazada a un dato almacenado en el montón (esto es importante) a otra variable hace que la propiedad del datos pase de la primera variable a la segunda. En Rust se dice que se mueve (*move*) la propiedad.
+
+Esta manera de actuar de Rust es importante entenderla bien así que usaré un ejemplo detallado para explicarme mejor.
 
 ```rust
 fn main () {
@@ -181,9 +179,7 @@ fn main () {
 // "El valor de saludo es: Hola, mundo"
 ```
 
-La propiedad del dato "Hola, mundo" ha pasado de la variable `hola` a la variable `saludo`.
-
-Tras el cambio de propiedad, la variable `hola` deja de existir y ya no se puede usar para acceder al dato "Hola, mundo" y es `saludo` la que sí que puede acceder, ya que ahora es su propietaria. Esto podemos verlo en el siguiente código:
+Pero, ¿qué sucede si queremos acceder a la variable `hola`?
 
 ```rust
 fn main () {
@@ -192,9 +188,13 @@ fn main () {
 
     println!("El valor de hola es: {} y el valor de saludo es: {}", hola, saludo);
 }
+// La propiedad del dato "Hola, mundo" ha pasado de la variable `hola` a la
+// variable `saludo`. Tras el cambio de propiedad, la variable `hola` deja
+// de existir y ya no se puede usar para acceder al dato "Hola, mundo"
+// y es `saludo` la que sí que puede acceder, ya que ahora es su propietaria.
 ```
 
-Si compilamos el código anterior obtenemos lo siguiente:
+Que al compilarlo obtenemos lo siguiente:
 
 ```rust
 let hola: String = String::from("Hola, mundo");
@@ -205,13 +205,11 @@ let hola: String = String::from("Hola, mundo");
  println!("El valor de hola es: {} y el valor de saludo es: {}", hola, saludo);
                                                                  ^^^^ value borrowed here after move
 
-// Sin entrar en detalle, el compilador nos está diciendo en las líneas 2 y 4, 
-// dónde la propiedad del dato se ha movido de la variable hola a la variable saludo. 
-// En la línea 7 nos dice dónde se ha intentado usar la variable hola
+// El compilador da un error y nos está diciendo que la propiedad del dato
+// se ha movido de la variable `hola` (línea 2) a la variable `saludo` (linea 4). 
+// Y en la línea 7 nos dice dónde se ha intentado usar la variable `hola`,
 // que ya ha dejado de existir y por tanto no puede acceder al dato.
 ```
-
-A diferencia de otros lenguajes de programación en Rust `let saludo = hola` no hace que `saludo` y `hola` estén enlazadas con el mismo dato. O que `saludo` tenga una copia del dato al que está enlazada `hola`. Debido al mecanismo de la propiedad, el enlace con el dato pasa, automáticamente, de estar en `hola` para estar en `saludo`, su propiedad se ha transferido o mejor, como se dice en Rust, se ha movido.
 
 Este cambio de asignación y por tanto el cambio de propietario también sucede cuando pasamos una variable como parámetro de una función.
 
@@ -229,29 +227,29 @@ fn saludo (texto: String) {
 }
 ```
 
-Compilar el código anterior nos muestra el siguiente mensaje \(he eliminado expresamente parte del mensaje que nos da el compilador\):
+Compilar el código anterior nos muestra el siguiente mensaje:
 
 ```rust
 let hola: String = String::from("Hola, mundo");
-    ---- move
-saludo(hola);
-       ---- value moved here
-  
-println!("El valor de hola es: {}", hola);
-                                    ^^^^
+    ---- move occurs because `hola` has type `String`, which does not implement the `Copy` trait
+ let saludo = hola;
+              ---- value moved here
+
+ println!("El valor de hola es: {}", hola);
+                                     ^^^^ value borrowed here after move
+
+// De nuevo podemos ver como el compilador nos avisa de los lugares dónde
+// se ha movido la propiedad y dónde se ha intentado usar variables que
+// ya no existen.
 ```
 
 Por último, este cambio de asignación también ocurre cuando se retorna un dato de una función, pero en este caso puesto que al retornar un dato, el ámbito de la función se acaba y no podemos usar la variable que tiene la propiedad inicial, no nos encontraremos con los errores comentados.
 
-> * Cada dato tiene una variable enlazada que es propietaria de ese dato
-> * Solo puede haber un único propietario de un dato al mismo tiempo
-> * Cuando se acaba el ámbito del propietario el dato es eliminado de la memoria
-
-Que **la propiedad empieza con una asignación** y que **la propiedad termina con el ámbito**, son aplicables tanto para datos que se almacenan en la pila como en el montón. Pero que **la propiedad se mueve con el cambio de asignación**, funciona de diferente manera dependiendo de si los datos se almacenan en la pila o en el montón. Para entender esa diferencia hablaré de mover (*move*) y copiar (*copy*).
-
 ## Mover y copiar
 
-Cuando asignamos una variable enlazada a un dato almacenado en la pila a otra variable, la segunda variable se enlaza a una copia del dato original. Quedando la primera variable enlazada y propietaria del dato original y la segunda variable enlazada y propietaria del dato copiado.
+Como he explicado anteriormente, que la propiedad se mueva con el cambio de asignación, pasa única y exclusivamente para datos almacenados en el montón.
+
+Asignar una variable que está enlazada a un dato almacenado en la pila a otra variable no comporta que se mueva la propiedad. Lo que sucede es que la segunda variable se enlaza a una copia (*copy*) del dato enlazado a la primera variable.
 
 ```rust
 fn main () {
@@ -260,13 +258,46 @@ fn main () {
     println!("El valor de i es: {}", i);
     println!("El valor de j es: {}", j);
 }
+// Se puede acceder tanto a `i` como a `j`.
+// Compilar y ejecutar este código nos dará como resultado:
+// "El valor de i es: 10"
+// "El valor de j es: 10"
 ```
 
+Y lo mismo sucede cuando pasamos una variable como parámetro de una función.
 
+```rust
+fn main () {
+    let i: i32 = 10;
+
+    duplica(i);
+
+    println!("El valor de i es: {}", i);
+}
+
+fn duplica (num: i32) {
+    println!("{} * 2 = {}", i, i * 2);
+}
+
+// Compilar y ejecutar este código nos dará como resultado:
+// "10 * 2 = 20"
+// "El valor de i es: 10"
+```
+
+Ahora es cuando cobra más sentido la explicación inicial sobre la pila y el montón.
+
+## Frases de resumen
+
+* Cada dato tiene una variable enlazada que es propietaria de ese dato
+* Solo puede haber un único propietario de un dato al mismo tiempo
+* Cuando se acaba el ámbito del propietario el dato es eliminado de la memoria
+* Cuando se asigna una variable a otra:
+  * Para datos en el montón la propiedad se mueve de una variable a la otra
+  * Para datos en la pila, los datos se copian de una variable a la otra
 
 ## Enlaces de referencia
 
-Un listado de todo aquello de lo que me he servido para aprender y poder escribir estos apuntes. Sincero agradecimiento a cada uno de sus autores.
+Un listado de todo aquello de lo que me he servido para aprender y poder escribir este apuntes. Sincero agradecimiento a cada uno de sus autores.
 
 * [https://tourofrust.com/chapter\_5\_es.html](https://tourofrust.com/chapter_5_es.html)
 * [https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/](https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/)
