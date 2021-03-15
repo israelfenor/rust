@@ -6,7 +6,7 @@ date = "2021-03-06"
 
 +++
 
-> Puesto que no soy ningún experto en la materia aviso que este escrito puede contener errores. Como sigo estudiando y aprendiendo lo iré corrigiendo y ampliando. También aviso de que he simplificado algunas secciones para facilitar alguna explicación.
+> Puesto que no soy ningún experto en la materia aviso que este escrito puede contener errores. Como sigo estudiando y aprendiendo lo iré corrigiendo y ampliando. También aviso que he simplificado algunas secciones para facilitar alguna explicación.
 
 Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gestión de la memoria en Rust con la traducción que he utilizado para este documento.
 
@@ -29,7 +29,7 @@ Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gesti�
 * ***Stack***: Pila.
 * ***Unbind***: Desligar.
 
-Para poder entender ***cómo*** se gestiona la memoria en Rust antes es necesario conocer, aunque sea de una manera superficial, cómo se usa la memoria de un ordenador.
+Para poder entender cómo se gestiona la memoria en Rust antes es necesario conocer, aunque sea de una manera superficial, cómo se usa la memoria de un ordenador.
 
 ## Variables y datos
 
@@ -64,6 +64,7 @@ Veamos un ejemplo de dato almacenado en la pila:
 
 ```rust
 let i: i32 = 10;
+
 // El dato 10 es almacenado en la pila ya que conocemos la cantidad de bytes
 // necesarios para almacenar ese dato (el mismo que para almacenar cualquier
 // dato soportado por el tipo i32, ya sea un 200 o un 1239)
@@ -79,6 +80,7 @@ Ahora veamos un ejemplo de dato almacenado en el montón:
 
 ```rust
 let texto: String = String::from("Hola, mundo");
+
 // El dato "Hola, mundo" es almacenado en el montón ya que la variable cadena al
 // ser de tipo String es susceptible de cambiar su tamaño si se cambia su contenido.
 // Es diferente el tamaño necesario para almacenar "Hola, mundo" que
@@ -134,6 +136,7 @@ fn main () {
     let num: i32 = 10;
     println!("El valor de num es: {}", num);
 }
+
 // El dato 10 está enlazado a la variable 'num'.
 // La variable num es la propietaria del dato 10.
 ```
@@ -150,6 +153,7 @@ fn main () {
     }
     println!("Esto está fuera del ámbito de num y su valor es: {}", num);
 }
+
 // La declaración de la variable 'num' ocurre dentro de un bloque delimitado entre {}.
 // El ámbito de la variable 'num' es ese bloque de código.
 
@@ -175,6 +179,7 @@ fn main () {
 
     println!("El valor de saludo es: {}", saludo);
 }
+
 // El resultado de compilar y ejecutar este código es:
 // "El valor de saludo es: Hola, mundo"
 ```
@@ -188,6 +193,7 @@ fn main () {
 
     println!("El valor de hola es: {} y el valor de saludo es: {}", hola, saludo);
 }
+
 // La propiedad del dato "Hola, mundo" ha pasado de la variable `hola` a la
 // variable `saludo`. Tras el cambio de propiedad, la variable `hola` deja
 // de existir y ya no se puede usar para acceder al dato "Hola, mundo"
@@ -258,6 +264,7 @@ fn main () {
     println!("El valor de i es: {}", i);
     println!("El valor de j es: {}", j);
 }
+
 // Se puede acceder tanto a `i` como a `j`.
 // Compilar y ejecutar este código nos dará como resultado:
 // "El valor de i es: 10"
@@ -301,7 +308,7 @@ Un listado de todo aquello de lo que me he servido para aprender y poder escribi
 
 * [https://tourofrust.com/chapter\_5\_es.html](https://tourofrust.com/chapter_5_es.html)
 * [https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/](https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/)
-* [https://blog.thoughtram.io/ownership-in-rust/
+* https://blog.thoughtram.io/ownership-in-rust/
 * [https://depth-first.com/articles/2020/01/27/rust-ownership-by-example/](https://depth-first.com/articles/2020/01/27/rust-ownership-by-example/)
 * [https://blog.logrocket.com/introducing-the-rust-borrow-checker/](https://blog.logrocket.com/introducing-the-rust-borrow-checker/)
 * [https://medium.com/@bugaevc/understanding-rust-ownership-borrowing-lifetimes-ff9ee9f79a9c](https://medium.com/@bugaevc/understanding-rust-ownership-borrowing-lifetimes-ff9ee9f79a9c)
