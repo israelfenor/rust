@@ -33,17 +33,15 @@ Para poder entender cómo se gestiona la memoria en Rust antes es necesario cono
 
 ## Variables y datos
 
-Siempre imaginé una variable como una caja donde se guarda un dato. Y que esa caja era una porción de memoria.
+Siempre imaginé una variable como una caja donde se guarda un dato. Y que esa caja era una porción de memoria. A esa caja se le podían ir guardando datos, unos reemplazando a los otros y cuando ya no los necesitaba, "destruía" esa caja, esa variable, y listos.
 
-A esa caja se le podían ir guardando datos, unos reemplazando a los otros y cuando no necesitaba más esos datos, "destruía" esa caja, esa variable, y listos.
-
-Frases que estaban en mi cabeza como "a la variable num se le asigna el valor 1" o "num vale 1", sumado a la sintaxis que utilizan muchos lenguajes de programación para declarar variables y asignarles un dato, me hacían pensar que primero existe la variable y luego el dato que se guarda en ella.
+Frases que estaban en mi cabeza como "a la variable num se le asigna el valor 1" o "num vale 1", sumado a la sintaxis que utilizan muchos lenguajes de programación para declarar variables y asignarles un dato, me hacían pensar que primero existía la variable y luego el dato que se guarda en ella.
 
 Pero lo que sucede es ligeramente diferente. Primero está el dato y luego está la variable. Primero el dato se guarda en una porción de la memoria y luego se crea una variable que se enlaza \(_bind_\) con esa porción de memoria. Ese enlace consiste en una dirección de memoria, que al igual que en un callejero, nos permite saber dónde de toda la memoria disponible está guardado el dato.
 
-Cuando declaramos una variable y le asignamos un dato, estamos enlazando la variable al dato. De la misma manera que cuando pasamos una variable como parámetro a una función no pasamos el dato de una caja a otra, sino que enlazamos la variable que recibe el parámetro a ese dato. Lo mismo sucede con el retorno de funciones, enlazamos el dato de retorno a la variable que espera ese dato de retorno.
+Cuando declaramos una variable y le asignamos un dato, estamos enlazando la variable al dato. De la misma manera que cuando pasamos una variable como parámetro a una función no pasamos el dato de una caja a otra, sino que enlazamos la variable que recibe el parámetro a ese dato. Lo mismo sucede con el retorno de funciones, enlazamos el dato de retorno a la variable que espera ese dato.
 
-El cambio es sutil, pero el concepto de enlace es muy útil para entender ciertos aspectos de la gestión de la memoria que a continuación.
+El cambio es sutil, pero el concepto de enlace es muy útil para entender ciertos aspectos de la gestión de la memoria que vamos a ver a continuación.
 
 ## Pila y montón
 
@@ -51,11 +49,11 @@ La pila \(_stack_\) y el montón \(_heap_\) son dos tipos de memoria donde podem
 
 La pila tiene una estructura, justamente como su nombre indica, de pila. En la pila se guardan los datos uno encima del otro y se quitan de uno en uno empezando por el último que se puso. A este funcionamiento se le llama [LIFO](https://es.wikipedia.org/wiki/Last_in%2C_first_out), _Last In, First Out_. Podemos imaginarlo como una pila de libros, complicado quitar el libro que hay más abajo sin quitar antes los que hay encima.
 
-El montón no tiene una estructura fija tan "estricta" como la pila, es más un espacio. En la que los datos se van guardando allí donde hay espacio libre. Siguiendo con la analogía anterior, podríamos decir que es una estantería donde podemos poner algunos libros continuos y otros no. Unos en un estante y otros en otro.
+El montón no tiene una estructura fija tan "estricta" como la pila, es más un espacio. En la que los datos se van guardando allí donde hay espacio libre. Siguiendo con la analogía anterior, podríamos decir que es una estantería donde podemos poner algunos libros continuos y otros no. Unos en un estante y otros en otro y no es necesario que sigan ninguna ordenación.
 
 Qué va en la pila y qué va en el montón depende, generalizando, del tipo del dato que queremos almacenar y más precisamente del tamaño \(_size_\) de la porción de memoria necesaria para almacenar ese dato.
 
-Todo dato que requiera de una cantidad de memoria que es conocida en tiempo de compilación y no cambiará a lo largo de la ejecución del programa, se almacena en la pila, y cuando esa cantidad es desconocida en tiempo de compilación o cambiará a lo largo de la ejecución del programa, se almacena en el montón.
+Todo dato que requiera de una cantidad de memoria que es conocida en tiempo de compilación y que no cambiará a lo largo de la ejecución del programa, se almacena en la pila. Cuando esa cantidad es desconocida en tiempo de compilación o cambiará a lo largo de la ejecución del programa, se almacena en el montón.
 
 * Se guardan en la pila, por ejemplo: enteros, flotantes, booleanos, caracteres, punteros...
 * Se guardan en el montón, por ejemplo: cadenas de texto, listas, vectores...
@@ -67,7 +65,7 @@ let i: i32 = 10;
 
 // El dato 10 es almacenado en la pila ya que conocemos la cantidad de bytes
 // necesarios para almacenar ese dato (el mismo que para almacenar cualquier
-// dato soportado por el tipo i32, ya sea un 200 o un 1239)
+// dato soportado por el tipo i32, ya sea un 200 o un 1239).
 ```
 
 ```text
@@ -79,12 +77,12 @@ Pila  | 10 | i |
 Ahora veamos un ejemplo de dato almacenado en el montón:
 
 ```rust
-let texto: String = String::from("Hola, mundo");
+let mut texto: String = String::from("Hola, mundo");
 
-// El dato "Hola, mundo" es almacenado en el montón ya que la variable cadena al
-// ser de tipo String es susceptible de cambiar su tamaño si se cambia su contenido.
-// Es diferente el tamaño necesario para almacenar "Hola, mundo" que
-// para almacenar "Adiós mundo cruel"
+// El dato "Hola, mundo" es almacenado en el montón ya que la variable 'texto' al
+// ser de tipo String puede cambiar su contenido, por tanto cambiar su tamaño.
+// Es diferente el tamaño necesario para almacenar "Hola, mundo" que para almacenar
+// "Adiós mundo cruel".
 ```
 
 La variable `texto` se guarda en memoria de la siguiente manera: en el montón se guarda el dato \(en este caso la cadena de texto\) y en la pila se almacena un puntero \(_pointer_\) a ese espacio en el montón junto con la capacidad de ese espacio y el tamaño del dato.
@@ -108,22 +106,24 @@ Montón | H | o | l | a | , |   | m | u | n | d | o |   |
        [-------------- tamaño ---------------------]
 ```
 
-La manera en cómo se almacenan y se borran los datos en el montón determina cómo gestiona la memoria un lenguaje de programación y por tanto cómo se programa en ese lenguaje.
+La manera en cómo se almacenan y se borran los datos en el montón determina cómo gestiona la memoria un lenguaje de programación y marca cómo se programa en ese lenguaje.
 
 ## Gestión de la memoria
 
-Todos los lenguajes de programación transfieren al programador, en mayor o menor medida, la gestión de la memoria del montón, que principalmente se refiere a la responsabilidad de almacenar datos en memoria ocupando memoria libre \(_allocation\)_ y borrar esos datos cuando ya nos son necesarios, liberando la memoria ocupada \(_free_\).
+Todos los lenguajes de programación transfieren al programador, en mayor o menor medida, la gestión de la memoria del montón. Esa gestión se refiere, principalmente, a la responsabilidad de almacenar datos en memoria ocupando memoria libre \(_allocation\)_ y borrar esos datos cuando ya nos son necesarios, liberando la memoria ocupada \(_free_\).
 
 Generalizando, esa gestión puede ser de dos maneras:
 
-* mediante un **recolector de basura** \(_garbage collector_\), donde el programador no tiene que pensar ni preocuparse dónde ni cómo los datos son almacenados ni borrados, ya que es el propio entorno de ejecución \(_runtime_\) del lenguaje el que se preocupa por ti. Lenguajes como Javascript o Java entre muchos funcionan de esta manera.
-* mediante la **asignación manual de memoria** \(_Manual memory allocation_\), en la que la gestión completa de la memoria recae sobre el programador. Lenguajes como C y C++ funcionan de esta manera. Es el programador quien tiene que especificar cómo y dónde almacenar los datos y cuando borrarlos.
+* mediante un **recolector de basura** \(_garbage collector_\), donde el programador no tiene que pensar ni preocuparse dónde los datos son almacenados ni cómo ni cuando son borrados, ya que es el propio entorno de ejecución \(_runtime_\) del lenguaje el que se preocupa por ti. Lenguajes como Javascript o Java entre muchos funcionan de esta manera.
+* mediante la **asignación manual de memoria** \(_Manual memory allocation_\), en la que la gestión completa de la memoria recae sobre el programador. Es el programador quien tiene que especificar cómo y dónde almacenar los datos y cuando borrarlos. Lenguajes como C y C++ funcionan de esta manera.
 
 El recolector de basura facilita la vida al desarrollador a costa de una pérdida de rendimiento y de control. Mediante la asignación manual de memoria tienes el rendimiento y control, a cambio de una mayor complejidad de código.
 
-Pero existe una tercera manera de gestionar la memoria. Mediante la propiedad \(_ownership_\), la manera en cómo lo hace Rust.
+Pero existe una tercera manera de gestionar la memoria, la manera en cómo lo hace Rust, mediante la propiedad \(_ownership_\).
 
 ## Propiedad
+
+La propiedad son una serie de reglas que hacen que el programador no tenga que pensar en cómo gestionar la memoria. Sin afectar a su rendimiento ni perder su control, como puede suceder con la recolección de basura y detectando en fase de compilación los posibles errores relacionados con la memoria que puedes encontrarte en fase de ejecución con la asignación manual de la memoria (*dangling pointers* o *double free*).
 
 En Rust, todo dato tiene un único propietario \(_owner_\). Ser propietario de un dato implica ser el único que puede acceder al dato y determina el tiempo \(_lifetime_\) en el que el dato permanece en la memoria y puede ser accedido y manipulado.
 
@@ -168,9 +168,9 @@ fn main () {
 
 ### La propiedad se mueve con el cambio de asignación
 
-Asignar una variable que está enlazada a un dato almacenado en el montón (esto es importante) a otra variable hace que la propiedad del datos pase de la primera variable a la segunda. En Rust se dice que se mueve (*move*) la propiedad.
+Asignar una variable que está enlazada a un dato almacenado en el montón a otra variable hace que la propiedad del dato pase de la primera variable a la segunda. En Rust se dice que se mueve (*move*) la propiedad.
 
-Esta manera de actuar de Rust es importante entenderla bien así que usaré un ejemplo detallado para explicarme mejor.
+Esta manera de actuar de Rust con los datos del motón es importante entenderla bien así que usaré un ejemplo detallado para explicarme mejor.
 
 ```rust
 fn main () {
@@ -291,8 +291,6 @@ fn duplica (num: i32) {
 // "El valor de i es: 10"
 ```
 
-Ahora es cuando cobra más sentido la explicación inicial sobre la pila y el montón.
-
 ## Frases de resumen
 
 * Cada dato tiene una variable enlazada que es propietaria de ese dato
@@ -304,7 +302,7 @@ Ahora es cuando cobra más sentido la explicación inicial sobre la pila y el mo
 
 ## Enlaces de referencia
 
-Un listado de todo aquello de lo que me he servido para aprender y poder escribir este apuntes. Sincero agradecimiento a cada uno de sus autores.
+Dejo a continuación un listado de todo aquello de lo que me he servido para aprender y poder escribir este apuntes. Sincero agradecimiento a cada uno de sus autores.
 
 * [https://tourofrust.com/chapter\_5\_es.html](https://tourofrust.com/chapter_5_es.html)
 * [https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/](https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/)
