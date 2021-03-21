@@ -63,9 +63,10 @@ Veamos un ejemplo de dato almacenado en la pila:
 ```rust
 let i: i32 = 10;
 
-// El dato 10 es almacenado en la pila ya que conocemos la cantidad de bytes
-// necesarios para almacenar ese dato (el mismo que para almacenar cualquier
-// dato soportado por el tipo i32, ya sea un 200 o un 1239).
+// El dato 10 es almacenado en la pila ya que conocemos la cantidad
+// de bytes necesarios para almacenar ese dato (el mismo que para
+// almacenar cualquier dato soportado por el tipo i32, ya sea un 200
+// o un 1239).
 ```
 
 ```text
@@ -79,10 +80,11 @@ Ahora veamos un ejemplo de dato almacenado en el montón:
 ```rust
 let mut texto: String = String::from("Hola, mundo");
 
-// El dato "Hola, mundo" es almacenado en el montón ya que la variable 'texto' al
-// ser de tipo String puede cambiar su contenido, por tanto cambiar su tamaño.
-// Es diferente el tamaño necesario para almacenar "Hola, mundo" que para almacenar
-// "Adiós mundo cruel".
+// El dato "Hola, mundo" es almacenado en el montón ya que la variable
+// 'texto' al ser de tipo String puede cambiar su contenido, por tanto
+// cambiar su tamaño.
+// Es diferente el tamaño necesario para almacenar "Hola, mundo" que 
+// para almacenar "Adiós mundo cruel".
 ```
 
 La variable `texto` se guarda en memoria de la siguiente manera: en el montón se guarda el dato \(en este caso la cadena de texto\) y en la pila se almacena un puntero \(_pointer_\) a ese espacio en el montón junto con la capacidad de ese espacio y el tamaño del dato.
@@ -154,14 +156,15 @@ fn main () {
     println!("Esto está fuera del ámbito de num y su valor es: {}", num);
 }
 
-// La declaración de la variable 'num' ocurre dentro de un bloque delimitado entre {}.
+// La declaración de la variable 'num' ocurre dentro de un bloque
+// delimitado entre {}.
 // El ámbito de la variable 'num' es ese bloque de código.
 
-// Una vez se sale del ámbito, el dato enlazado con la variable 'num' (un 10) es 
-// borrado de la memoria (es soltado).
+// Una vez se sale del ámbito, el dato enlazado con la variable 'num'
+// (un 10) es borrado de la memoria (es soltado).
 
-// No se puede usar la variable 'num' fuera de su ámbito por tanto no se puede 
-// acceder al dato 10 más allá de ese ámbito. La sentecia: 
+// No se puede usar la variable 'num' fuera de su ámbito por tanto
+// no se puede acceder al dato 10 más allá de ese ámbito. La sentecia: 
 // println!("Esto está fuera del ámbito de num y su valor es: {}", num); 
 // da un error de compilación.
 ```
@@ -194,10 +197,11 @@ fn main () {
     println!("El valor de hola es: {} y el valor de saludo es: {}", hola, saludo);
 }
 
-// La propiedad del dato "Hola, mundo" ha pasado de la variable `hola` a la
-// variable `saludo`. Tras el cambio de propiedad, la variable `hola` deja
-// de existir y ya no se puede usar para acceder al dato "Hola, mundo"
-// y es `saludo` la que sí que puede acceder, ya que ahora es su propietaria.
+// La propiedad del dato "Hola, mundo" ha pasado de la variable `hola`
+// a la variable `saludo`. Tras el cambio de propiedad, la variable
+// `hola` deja de existir y ya no se puede usar para acceder al dato
+// "Hola, mundo" y es `saludo` la que sí que puede acceder, ya que
+// ahora es su propietaria.
 ```
 
 Que al compilarlo obtenemos lo siguiente:
@@ -211,10 +215,12 @@ let hola: String = String::from("Hola, mundo");
  println!("El valor de hola es: {} y el valor de saludo es: {}", hola, saludo);
                                                                  ^^^^ value borrowed here after move
 
-// El compilador da un error y nos está diciendo que la propiedad del dato
-// se ha movido de la variable `hola` (línea 2) a la variable `saludo` (linea 4). 
-// Y en la línea 7 nos dice dónde se ha intentado usar la variable `hola`,
-// que ya ha dejado de existir y por tanto no puede acceder al dato.
+// El compilador da un error y nos está diciendo que la propiedad 
+// del dato se ha movido de la variable `hola` (línea 2) a la variable
+// `saludo` (linea 4). 
+// Y en la línea 7 nos dice dónde se ha intentado usar la variable 
+// `hola`, que ya ha dejado de existir y por tanto no puede acceder
+// al dato.
 ```
 
 Este cambio de asignación y por tanto el cambio de propietario también sucede cuando pasamos una variable como parámetro de una función.
@@ -244,9 +250,9 @@ let hola: String = String::from("Hola, mundo");
  println!("El valor de hola es: {}", hola);
                                      ^^^^ value borrowed here after move
 
-// De nuevo podemos ver como el compilador nos avisa de los lugares dónde
-// se ha movido la propiedad y dónde se ha intentado usar variables que
-// ya no existen.
+// De nuevo podemos ver como el compilador nos avisa de los lugares
+// dónde se ha movido la propiedad y dónde se ha intentado usar 
+// variables que ya no existen.
 ```
 
 Por último, este cambio de asignación también ocurre cuando se retorna un dato de una función, pero en este caso puesto que al retornar un dato, el ámbito de la función se acaba y no podemos usar la variable que tiene la propiedad inicial, no nos encontraremos con los errores comentados.
