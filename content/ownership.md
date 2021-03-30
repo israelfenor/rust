@@ -27,6 +27,7 @@ Esta es una lista de palabras inglesas muy utilizadas en el ámbito de la gesti�
 * ***Scope***: Ámbito.
 * ***Size***: Tamaño.
 * ***Stack***: Pila.
+* ___Trait___: Rasgo.
 * ***Unbind***: Desligar.
 
 Para poder entender cómo se gestiona la memoria en Rust antes es necesario conocer, aunque sea de una manera superficial, cómo se usa la memoria de un ordenador.
@@ -171,7 +172,7 @@ fn main () {
 
 ### La propiedad se mueve con el cambio de asignación
 
-Asignar una variable que está enlazada a un dato almacenado en el montón a otra variable hace que la propiedad del dato pase de la primera variable a la segunda. En Rust se dice que se mueve (*move*) la propiedad.
+Asignar una variable que está enlazada a un dato __almacenado en el montón__ a otra variable hace que la propiedad del dato pase de la primera variable a la segunda. En Rust se dice que se mueve (*move*) la propiedad.
 
 Esta manera de actuar de Rust con los datos del motón es importante entenderla bien así que usaré un ejemplo detallado para explicarme mejor.
 
@@ -187,7 +188,7 @@ fn main () {
 // "El valor de saludo es: Hola, mundo"
 ```
 
-Pero, ¿qué sucede si queremos acceder a la variable `hola`?
+Pero, ¿qué sucede si accedemos a la variable `hola`?
 
 ```rust
 fn main () {
@@ -261,7 +262,7 @@ Por último, este cambio de asignación también ocurre cuando se retorna un dat
 
 Como he explicado anteriormente, que la propiedad se mueva con el cambio de asignación, pasa única y exclusivamente para datos almacenados en el montón.
 
-Asignar una variable que está enlazada a un dato almacenado en la pila a otra variable no comporta que se mueva la propiedad. Lo que sucede es que la segunda variable se enlaza a una copia (*copy*) del dato enlazado a la primera variable.
+Asignar una variable que está enlazada a un dato __almacenado en la pila__ a otra variable no comporta que se mueva la propiedad. Lo que sucede es que la segunda variable se enlaza a una copia (*copy*) del dato enlazado a la primera variable.
 
 ```rust
 fn main () {
@@ -297,20 +298,35 @@ fn duplica (num: i32) {
 // "El valor de i es: 10"
 ```
 
-## Frases de resumen
+Que un dato se copie o se mueva no solo está relacionado con que el dato esté almacenado en la pila o en el montón, también está relacionado con que el tipo del dato implemente o no implemente el rasgo (*trait*) *Copy*.  Si el dato implementa ese rasgo entonces una asignación comportará una copia del dato, pero si no lo implementa comportará que la propiedad se mueva.
+
+Recupero el mensaje de error que nos devolvió el compilador anteriormente:
+
+```rust
+let hola: String = String::from("Hola, mundo");
+    ---- move occurs because `hola` has type `String`, which does not implement the `Copy` trait
+ let saludo = hola;
+              ---- value moved here
+
+ println!("El valor de hola es: {}", hola);
+                                     ^^^^ value borrowed here after move
+```
+
+Ahora la frase *- move occurs because `hola` has type `String`, which does not implement the `Copy` -* cobra un mayor sentido ya que nos dice que la propiedad se ha movido porque el tipo *String* no implementa el rasgo *Copy*. Por ahora, nos vale decir que en Rust los datos que se almacenan en la pila implementan el rasgo *Copy* y los del montón, no. Pero si quieres ver un listado de los tipos que lo implementan, nada mejor que la [documentación oficial](https://doc.rust-lang.org/core/marker/trait.Copy.html#implementors).
+
+## Conceptos clave
 
 * Cada dato tiene una variable enlazada que es propietaria de ese dato
 * Solo puede haber un único propietario de un dato al mismo tiempo
 * Cuando se acaba el ámbito del propietario el dato es eliminado de la memoria
 * Cuando se asigna una variable a otra:
-  * Para datos en el montón la propiedad se mueve de una variable a la otra
-  * Para datos en la pila, los datos se copian de una variable a la otra
+  * Para datos en el montón o que no implementen el rasgo *Copy* la propiedad se mueve de una variable a la otra
+  * Para datos en la pila o que implementen el rasgo *Copy*, los datos se copian de una variable a la otra
 
 ## Enlaces de referencia
 
 Dejo a continuación un listado de todo aquello de lo que me he servido para aprender y poder escribir este apuntes. Sincero agradecimiento a cada uno de sus autores.
 
-* [https://tourofrust.com/chapter\_5\_es.html](https://tourofrust.com/chapter_5_es.html)
 * [https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/](https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/)
 * https://blog.thoughtram.io/ownership-in-rust/
 * [https://depth-first.com/articles/2020/01/27/rust-ownership-by-example/](https://depth-first.com/articles/2020/01/27/rust-ownership-by-example/)
