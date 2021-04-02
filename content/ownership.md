@@ -146,7 +146,7 @@ fn main () {
 
 ### La propiedad termina con el ámbito
 
-Cuando termina el ámbito \(_scope\)_ de una variable, se rompe el enlace \(_unbind_\) entre la variable y el dato del que es propietaria y comporta el borrado automático del dato de la memoria \(y la liberación de esa porción de memoria\). En Rust se dice que el dato es soltado \(_dropped_\).
+Cuando termina el ámbito \(_scope\)_ de una variable, la variable se elimina, se rompe el enlace \(_unbind_\) entre la variable y el dato del que es propietaria y se borra automáticamente el dato de la memoria \(comportando la liberación de esa porción de memoria\). En Rust se dice que el dato es soltado \(_dropped_\).
 
 ```rust
 fn main () {
@@ -172,135 +172,143 @@ fn main () {
 
 ### La propiedad se mueve con el cambio de asignación
 
-Asignar una variable que está enlazada a un dato __almacenado en el montón__ a otra variable hace que la propiedad del dato pase de la primera variable a la segunda. En Rust se dice que se mueve (*move*) la propiedad.
-
-Esta manera de actuar de Rust con los datos del motón es importante entenderla bien así que usaré un ejemplo detallado para explicarme mejor.
+Asignar una variable a otra hace que la propiedad del dato pase de una variable a la otra.  Se rompe el enlace entre la variable original y el valor. En Rust se dice que la propiedad se ha movido (*move*, *moved*).
 
 ```rust
 fn main () {
     let hola: String = String::from("Hola, mundo");
+    // `hola` es la propietaria del dato "Hola, mundo".
+    
     let saludo = hola;
-
-    println!("El valor de saludo es: {}", saludo);
+    // `saludo` es ahora la propietaria del dato "Hola, mundo".
 }
-
-// El resultado de compilar y ejecutar este código es:
-// "El valor de saludo es: Hola, mundo"
 ```
 
-Pero, ¿qué sucede si accedemos a la variable `hola`?
+Sucede igual cuando pasamos una variable como parámetro de una función. La propiedad pasa a la variable que "recoge" el dato.
 
 ```rust
 fn main () {
     let hola: String = String::from("Hola, mundo");
-    let saludo = hola;
-
-    println!("El valor de hola es: {} y el valor de saludo es: {}", hola, saludo);
+    // `hola` es la propietaria del dato "Hola, mundo".
+    
+    saluda(hola);    
 }
 
-// La propiedad del dato "Hola, mundo" ha pasado de la variable `hola`
-// a la variable `saludo`. Tras el cambio de propiedad, la variable
-// `hola` deja de existir y ya no se puede usar para acceder al dato
-// "Hola, mundo" y es `saludo` la que sí que puede acceder, ya que
-// ahora es su propietaria.
+fn saluda (mensaje: String) {
+    // `mensaje` es ahora la propietaria del dato "Hola, mundo".
+    println!("{}", mensaje);
+}
 ```
 
-Que al compilarlo obtenemos lo siguiente:
+Como he escrito anteriormente, todo dato tiene un único propietario y el propietario es el único que puede acceder al dato. Por tanto a partir de un cambio de propiedad cualquier intento de acceder al dato mediante la variable original no será posible y comportará un error del que nos avisará, amablemente, el compilador.
 
 ```rust
+fn main () {
+    let hola: String = String::from("Hola, mundo");
+    // `hola` es la propietaria del dato "Hola, mundo".
+    
+    let saludo = hola;
+    // `saludo` es ahora la propietaria del dato "Hola, mundo".
+    
+    let hola_mundo = hola; // Asignamos de nuevo `hola` a otra variable    
+}
+```
+
+```rust
+// El resultado de la compilación es el siguiente:
 let hola: String = String::from("Hola, mundo");
     ---- move occurs because `hola` has type `String`, which does not implement the `Copy` trait
  let saludo = hola;
               ---- value moved here
 
- println!("El valor de hola es: {} y el valor de saludo es: {}", hola, saludo);
-                                                                 ^^^^ value borrowed here after move
+ let hola_mundo = hola;
+                  ^^^^ value used here after move
 
-// El compilador da un error y nos está diciendo que la propiedad 
-// del dato se ha movido de la variable `hola` (línea 2) a la variable
-// `saludo` (linea 4). 
-// Y en la línea 7 nos dice dónde se ha intentado usar la variable 
-// `hola`, que ya ha dejado de existir y por tanto no puede acceder
-// al dato.
+// Prestemos, atención de momento, solo a las líneas 5 y 8.
+// La línea 5 nos marca dónde ha sucedido el movimiento de la 
+// propiedad, y la línea 8 nos marca dónde se ha utilizado una
+// variable que ya no tiene la propiedad de ningún dato.
 ```
 
-Este cambio de asignación y por tanto el cambio de propietario también sucede cuando pasamos una variable como parámetro de una función.
+De nuevo sucede lo mismo cuando tratamos de usar como parámetro de una función una variable que ya no está enlazada a ningún dato.
 
 ```rust
 fn main () {
     let hola: String = String::from("Hola, mundo");
+    // `hola` es la propietaria del dato "Hola, mundo".
 
-    saludo(hola);
+    let saludo = hola;
+    // `saludo` es ahora la propietaria del dato "Hola, mundo".
 
-    println!("El valor de hola es: {}", hola);
+    saluda(hola);  // Al pasar la variable `hola` como parámetro de una función
+    			   // estamos de nuevo asignándola a otra variable, en este
+    			   // caso la variable `mensaje` de la función `saluda()`
 }
 
-fn saludo (texto: String) {
-    println!("{}", texto);
+fn saluda (mensaje: String) {
+    println!("{}", mensaje);
 }
 ```
-
-Compilar el código anterior nos muestra el siguiente mensaje:
 
 ```rust
 let hola: String = String::from("Hola, mundo");
     ---- move occurs because `hola` has type `String`, which does not implement the `Copy` trait
- let saludo = hola;
-              ---- value moved here
+let saludo = hola;
+             ---- value moved here
 
- println!("El valor de hola es: {}", hola);
-                                     ^^^^ value borrowed here after move
-
-// De nuevo podemos ver como el compilador nos avisa de los lugares
-// dónde se ha movido la propiedad y dónde se ha intentado usar 
-// variables que ya no existen.
+saluda(hola);
+       ^^^^ value used here after move
 ```
 
-Por último, este cambio de asignación también ocurre cuando se retorna un dato de una función, pero en este caso puesto que al retornar un dato, el ámbito de la función se acaba y no podemos usar la variable que tiene la propiedad inicial, no nos encontraremos con los errores comentados.
+Este movimiento de la propiedad vinculado a un cambio de asignación tiene un aspecto muy importante, **únicamente sucede con datos almacenados en el montón**, y para ser más exactos **únicamente sucede con los datos cuyo tipo no implemente el rasgo (*trait*) *Copy***.
 
-## Mover y copiar
+### Copiar
 
-Como he explicado anteriormente, que la propiedad se mueva con el cambio de asignación, pasa única y exclusivamente para datos almacenados en el montón.
-
-Asignar una variable que está enlazada a un dato __almacenado en la pila__ a otra variable no comporta que se mueva la propiedad. Lo que sucede es que la segunda variable se enlaza a una copia (*copy*) del dato enlazado a la primera variable.
+Todos los tipos de datos que se almacenan en la pila implementan el rasgo *Copy*. Esto comporta que al asignar una variable enlazada a un tipo de dato que implementa el rasgo *Copy* a otra variable, en vez de moverse la propiedad se crea una copia del dato y se enlaza con la nueva variable.
 
 ```rust
 fn main () {
     let i: i32 = 10;
-    let j: i32 = i;
-    println!("El valor de i es: {}", i);
-    println!("El valor de j es: {}", j);
+    // `i` es la propietaria del dato 10.
+    
+    let j = i;
+    // `j` es la propietaria de otro dato 10,
+    // una copia del dato 10 enlazado a `i`.
 }
-
-// Se puede acceder tanto a `i` como a `j`.
-// Compilar y ejecutar este código nos dará como resultado:
-// "El valor de i es: 10"
-// "El valor de j es: 10"
 ```
 
-Y lo mismo sucede cuando pasamos una variable como parámetro de una función.
+Lo mismo sucede cuando pasamos una variable como parámetro de una función.
 
 ```rust
 fn main () {
     let i: i32 = 10;
+	// `i` es la propietaria del dato 10.
 
-    duplica(i);
-
-    println!("El valor de i es: {}", i);
+    duplica(i);  
 }
 
 fn duplica (num: i32) {
-    println!("{} * 2 = {}", i, i * 2);
+    // `num` es la propietaria de otro dato 10
+    // una copia del dato 10 enlazado a `i`.
+    println!("{} * 2 = {}", num, num * 2);
 }
-
-// Compilar y ejecutar este código nos dará como resultado:
-// "10 * 2 = 20"
-// "El valor de i es: 10"
 ```
 
-Que un dato se copie o se mueva no solo está relacionado con que el dato esté almacenado en la pila o en el montón, también está relacionado con que el tipo del dato implemente o no implemente el rasgo (*trait*) *Copy*.  Si el dato implementa ese rasgo entonces una asignación comportará una copia del dato, pero si no lo implementa comportará que la propiedad se mueva.
+```text
+      +----+---+
+Pila  | 10 | i |
+      +----+---+
+      
+Al asignar i a j, pasamos a tener:
 
-Recupero el mensaje de error que nos devolvió el compilador anteriormente:
+      +----+---+
+      | 10 | j |
+Pila  +----+---+
+      | 10 | i |
+      +----+---+
+```
+
+Cuando hay cambios de asignación, Rust trata de copiar y si no puede, mueve la propiedad. Veamos de nuevo el mensaje que nos daba anteriormente el compilador:
 
 ```rust
 let hola: String = String::from("Hola, mundo");
@@ -308,20 +316,36 @@ let hola: String = String::from("Hola, mundo");
  let saludo = hola;
               ---- value moved here
 
- println!("El valor de hola es: {}", hola);
-                                     ^^^^ value borrowed here after move
+ let hola_mundo = hola;
+                  ^^^^ value used here after move
+
+// Ahora entendemos la línea 2. Como el tipo de dato String
+// no implementa el rasgo Copy, la propiedad se ha movido.
 ```
 
-Ahora la frase *- move occurs because `hola` has type `String`, which does not implement the `Copy` -* cobra un mayor sentido ya que nos dice que la propiedad se ha movido porque el tipo *String* no implementa el rasgo *Copy*. Por ahora, nos vale decir que en Rust los datos que se almacenan en la pila implementan el rasgo *Copy* y los del montón, no. Pero si quieres ver un listado de los tipos que lo implementan, nada mejor que la [documentación oficial](https://doc.rust-lang.org/core/marker/trait.Copy.html#implementors).
+```text
+       +---+----+----+--------+
+	   | - | -  | -  |  hola  |
+Pila   +---+----+----+--------+
+       | * | 13 | 12 | saludo |
+       +-|-+----+----+--------+
+         |
+         |
+       +-v-+---+---+---+---+---+---+---+---+---+---+---+
+Montón | H | o | l | a | , |   | m | u | n | d | o |   |
+       +---+---+---+---+---+---+---+---+---+---+---+---+
+```
+
+> Si quieres ver un listado de los tipos que implementan el rasgo *Copy* y profundizar más en este rasgo, nada mejor que la [documentación oficial](https://doc.rust-lang.org/core/marker/trait.Copy.html#implementors).
 
 ## Conceptos clave
 
-* Cada dato tiene una variable enlazada que es propietaria de ese dato
-* Solo puede haber un único propietario de un dato al mismo tiempo
-* Cuando se acaba el ámbito del propietario el dato es eliminado de la memoria
+* Cada dato tiene una variable enlazada que es propietaria de ese dato.
+* Solo puede haber un único propietario de un dato al mismo tiempo.
+* Cuando se acaba el ámbito del propietario el dato es eliminado de la memoria.
 * Cuando se asigna una variable a otra:
-  * Para datos en el montón o que no implementen el rasgo *Copy* la propiedad se mueve de una variable a la otra
-  * Para datos en la pila o que implementen el rasgo *Copy*, los datos se copian de una variable a la otra
+  * Para datos que no implementen el rasgo *Copy* la propiedad se mueve de una variable a la otra
+  * Para datos que implementen el rasgo *Copy*, los datos se copian de una variable a la otra
 
 ## Enlaces de referencia
 
