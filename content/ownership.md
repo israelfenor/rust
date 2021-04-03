@@ -172,7 +172,7 @@ fn main () {
 
 ### La propiedad se mueve con el cambio de asignación
 
-Asignar una variable a otra hace que la propiedad del dato pase de una variable a la otra.  Se rompe el enlace entre la variable original y el valor. En Rust se dice que la propiedad se ha movido (*move*, *moved*).
+Asignar una variable a otra (asignación explícita) hace que la propiedad del dato pase de una variable a la otra.  Se rompe el enlace entre la variable original y el valor. En Rust se dice que la propiedad se ha movido (*move*, *moved*).
 
 ```rust
 fn main () {
@@ -184,7 +184,7 @@ fn main () {
 }
 ```
 
-Sucede igual cuando pasamos una variable como parámetro de una función. La propiedad pasa a la variable que "recoge" el dato.
+Sucede igual cuando pasamos una variable como parámetro de una función (asignación implícita). La propiedad pasa a la variable que "recoge" el dato.
 
 ```rust
 fn main () {
@@ -210,7 +210,8 @@ fn main () {
     let saludo = hola;
     // `saludo` es ahora la propietaria del dato "Hola, mundo".
     
-    let hola_mundo = hola; // Asignamos de nuevo `hola` a otra variable    
+    let hola_mundo = hola; 
+    // Asignamos de nuevo `hola` a otra variable.
 }
 ```
 
@@ -240,9 +241,10 @@ fn main () {
     let saludo = hola;
     // `saludo` es ahora la propietaria del dato "Hola, mundo".
 
-    saluda(hola);  // Al pasar la variable `hola` como parámetro de una función
-    			   // estamos de nuevo asignándola a otra variable, en este
-    			   // caso la variable `mensaje` de la función `saluda()`
+    saluda(hola);  
+    // Al pasar la variable `hola` como parámetro de una función
+    // estamos de nuevo asignándola a otra variable, en este
+    // caso la variable `mensaje` de la función `saluda()`
 }
 
 fn saluda (mensaje: String) {
@@ -308,7 +310,7 @@ Pila  +----+---+
       +----+---+
 ```
 
-Cuando hay cambios de asignación, Rust trata de copiar y si no puede, mueve la propiedad. Veamos de nuevo el mensaje que nos daba anteriormente el compilador:
+Cuando hay cambios de asignación, Rust trata de copiar el dato y si no puede, mueve su propiedad. Veamos de nuevo el mensaje que nos daba anteriormente el compilador:
 
 ```rust
 let hola: String = String::from("Hola, mundo");
@@ -319,7 +321,7 @@ let hola: String = String::from("Hola, mundo");
  let hola_mundo = hola;
                   ^^^^ value used here after move
 
-// Ahora entendemos la línea 2. Como el tipo de dato String
+// Ahora entendemos la línea 2. Puesto que el tipo de dato String
 // no implementa el rasgo Copy, la propiedad se ha movido.
 ```
 
@@ -349,7 +351,7 @@ Montón | H | o | l | a | , |   | m | u | n | d | o |   |
 
 ## Enlaces de referencia
 
-Dejo a continuación un listado de todo aquello de lo que me he servido para aprender y poder escribir este apuntes. Sincero agradecimiento a cada uno de sus autores.
+Dejo a continuación un listado de todo aquello de lo que me he servido para aprender y poder escribir este apunte. Sincero agradecimiento a cada uno de sus autores.
 
 * [https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/](https://www.softax.pl/blog/rust-lang-in-a-nutshell-1-introduction/)
 * https://blog.thoughtram.io/ownership-in-rust/
