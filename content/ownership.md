@@ -9,7 +9,7 @@ date = "2021-03-06"
 > Este apunte es la segunda entrega de una serie de anotaciones que estoy haciendo respecto la gestión de la memoria en Rust.
 >
 > * Parte 1: Ownership
-> * [Parte 1: Borrowing](../borrowing-gestion-de-memoria-rust)
+> * [Parte 2: Borrowing](../borrowing-gestion-de-memoria-rust)
 
 > Puesto que no soy ningún experto en la materia aviso que este escrito puede contener errores. Como sigo estudiando y aprendiendo lo iré corrigiendo y ampliando. También aviso que he simplificado algunas secciones para facilitar alguna explicación y mi propio entendimiento.
 
@@ -75,7 +75,7 @@ let i: i32 = 10;
 // o un 1239).
 ```
 
-```nocode
+```txt
       +----+---+
 Pila  | 10 | i |
       +----+---+
@@ -95,7 +95,7 @@ let mut texto: String = String::from("Hola, mundo");
 
 La variable `texto` se guarda en memoria de la siguiente manera: en el montón se guarda el dato \(en este caso la cadena de texto\) y en la pila se almacena un puntero \(_pointer_\) a ese espacio en el montón junto con la capacidad de ese espacio y el tamaño del dato.
 
-```nocode
+```txt
               puntero
             /    capacidad
            /    /     tamaño
@@ -301,7 +301,7 @@ fn duplica (num: i32) {
 }
 ```
 
-```nocode
+```txt
       +----+---+
 Pila  | 10 | i |
       +----+---+
@@ -330,9 +330,9 @@ let hola: String = String::from("Hola, mundo");
 // no implementa el rasgo Copy, la propiedad se ha movido.
 ```
 
-```nocode
+```txt
        +---+----+----+--------+
-	   | - | -  | -  |  hola  |
+       | - | -  | -  |  hola  |
 Pila   +---+----+----+--------+
        | * | 13 | 12 | saludo |
        +-|-+----+----+--------+

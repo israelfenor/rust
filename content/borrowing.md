@@ -105,7 +105,7 @@ Para estas y otras razones existen los préstamos (*borrowing*).
 
 El propietario de un dato puede prestar el acceso a ese dato a otras variables sin perder en ningún momento su propiedad. Cada préstamo es un puntero al dato. A esos punteros se les denomina referencias (*references*).
 
-```nocode
+```txt
        +---+----+-----+------+---+----+----+--------+
 Pila   | * | 13  | 12 | hola | * | 13 | 12 | saludo |
        +-|-+----+-----+------+-|-+----+----+--------+
@@ -117,8 +117,11 @@ Pila   | * | 13  | 12 | hola | * | 13 | 12 | saludo |
 Montón | H | o | l | a | , |   | m | u | n | d | o |   |
        +---+---+---+---+---+---+---+---+---+---+---+---+
 
-La variable 'hola' es la propietaria del dato "Hola, mundo" y le presta 
-el acceso a la variable 'saludo'. Tanto 'hola' como 'saludo' apuntan al mismo dato.
+La variable 'hola' es la propietaria del dato "Hola, mundo"
+y le presta el acceso a la variable 'saludo'.
+
+Tanto 'hola' como 'saludo' apuntan al mismo dato.
+
 La variable 'saludo' tiene una referencia (puntero) al dato.
 ```
 
@@ -407,7 +410,7 @@ préstamo 1: Hola, préstamo 2: Hola
 préstamo 1: Hola
 ```
 
-```nocode
+```txt
        +---+---+---+--------+---+---+---+------------+---+---+---+------------+
 Pila   | * | 5 | 4 | saludo | * | 5 | 4 | prestamo_1 | * | 5 | 4 | prestamo_2 |
        +-|-+---+---+--------+-|-+---+---+------------+-|-+---+---+------------+
@@ -419,8 +422,8 @@ Pila   | * | 5 | 4 | saludo | * | 5 | 4 | prestamo_1 | * | 5 | 4 | prestamo_2 |
 Montón | H | o | l | a |   |
        +---+---+---+---+---+
 
-Tanto prestamo_1 como prestamo_2 son referencias al mismo dato del que es propietaria
-la variable saludo.
+Tanto prestamo_1 como prestamo_2 son referencias al mismo dato
+del que es propietaria la variable saludo.
 ```
 
 ### Las referencias mutables son movidas
@@ -457,20 +460,6 @@ let prestamo_2 = prestamo_1;
 
 ```
 
-
-
 ## Conclusión
 
 En Rust todo dato tiene un único propietario y ese propietario puede prestar el acceso a ese dato tantas veces como sea necesario teniendo en cuenta que simultáneamente no puede haber un préstamo mutable y préstamos inmutables, pero sí únicamente uno o varios préstamos inmutables.
-
-
-
-
-
-
-
-
-
-
-
-
