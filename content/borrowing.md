@@ -28,7 +28,7 @@ En el [anterior apunte](../ownership-gestion-de-memoria-rust) comenté que cuand
 1. si el tipo del dato **implementa** el rasgo (*trait*) *Copy*, se **crea una copia** en memoria del dato original y se enlaza a la nueva variable.
 2. si el tipo del dato **no implementa** el rasgo *Copy*, se rompe el enlace con la actual variable y se crea un enlace con la nueva, haciendo que la propiedad (*ownership*) **se mueva** de una variable a la otra.
 
-En el primer caso podemos seguir accediendo al dato original mediante la variable original, pero en el segundo caso no podemos acceder al dato original mediante la variable original, ya que perdió su propiedad, y solo podemos hacerlo a través de la segunda variable (la nueva propietaria).
+En el primer caso podemos seguir accediendo al dato original mediante la variable original, pero en el segundo caso no podemos usar la variable original ya que dejó de ser propietaria del dato, y solo podemos hacerlo a través de la segunda variable (la nueva propietaria).
 
 En este escenario nos puede surgir una pregunta, ¿hay alguna manera de seguir usando el dato y la variable original tras una asignación?. La respuesta es, sí. Y podemos hacerlo de dos maneras, **implementando el rasgo *Copy*** o mediante los **préstamos** (*borrowing*).
 
@@ -287,7 +287,9 @@ j: 10, k: 10, l: 10
 
 ### Referencias mutables
 
-Son esas referencias que pueden acceder al dato y modificarlo. Se declaran usando **&mut**. Hay que tener en cuenta que para que una referencia mutable pueda modficar el dato, el propietario del dato también tiene que ser mutable.
+Son esas referencias que pueden acceder al dato y modificarlo. Se declaran usando **&mut**.
+
+> Para que una referencia mutable pueda modficar el dato, el propietario del dato también tiene que ser mutable.
 
 ```rust
 fn main () {
@@ -334,7 +336,7 @@ println!("j: {}", j);
 
 ## Desrefenciar (Dereference)
 
-Una variable es un enlace a una parte de la memoria donde se almacena un dato. Una referencia es un enlace a esa misma parte de la memoria. Por lo tanto una referencia es una dirección de memoria, no es el dato en sí. Cuando una variable es una referencia mutable, si queremos manipular el dato al que apunta debemos "desreferenciar" la variable mediante un _*_ (llamado operador de indirección).
+Una variable es un enlace a una parte de la memoria donde se almacena un dato. Una referencia es un enlace a esa misma parte de la memoria. Por lo tanto una referencia es una dirección de memoria, no es el dato en sí. Cuando una variable es una referencia mutable, si queremos manipular el dato al que apunta debemos "desreferenciar" la variable mediante un __*__ (llamado operador de indirección).
 
 ```rust
 fn main () {

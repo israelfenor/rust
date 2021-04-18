@@ -6,7 +6,7 @@ date = "2021-03-06"
 
 +++
 
-> Este apunte es la segunda entrega de una serie de anotaciones que estoy haciendo respecto la gestión de la memoria en Rust.
+> Este apunte es la primera entrega de una serie de anotaciones que estoy haciendo respecto la gestión de la memoria en Rust.
 >
 > * Parte 1: Ownership
 > * [Parte 2: Borrowing](../borrowing-gestion-de-memoria-rust)
